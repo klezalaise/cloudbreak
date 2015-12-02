@@ -40,15 +40,15 @@ public class EnvironmentVariableConfig {
 
     public static final String CB_CONTAINER_ORCHESTRATOR = "SWARM";
     public static final String CB_SUPPORTED_CONTAINER_ORCHESTRATORS = "com.sequenceiq.cloudbreak.orchestrator.swarm.SwarmContainerOrchestrator";
-    public static final String CB_DOCKER_AMBARI_IMAGE_NAME = "sequenceiq/ambari:2.1.2-v4";
+    public static final String CB_DOCKER_AMBARI_IMAGE_NAME = "sequenceiq/ambari:2.1.2-v8";
     public static final String CB_DOCKER_CONTAINER_AMBARI_WARMUP = CB_DOCKER_AMBARI_IMAGE_NAME;
     public static final String CB_DOCKER_CONTAINER_AMBARI = CB_DOCKER_AMBARI_IMAGE_NAME;
     public static final String CB_DOCKER_CONTAINER_REGISTRATOR = "sequenceiq/registrator:v5.2";
-    public static final String CB_DOCKER_CONTAINER_DOCKER_CONSUL_WATCH_PLUGN = "sequenceiq/docker-consul-watch-plugn:1.0";
+    public static final String CB_DOCKER_CONTAINER_DOCKER_CONSUL_WATCH_PLUGN = "sequenceiq/docker-consul-watch-plugn:1.1";
     public static final String CB_DOCKER_CONTAINER_AMBARI_DB = "postgres:9.4.1";
     public static final String CB_DOCKER_CONTAINER_KERBEROS = "sequenceiq/kerberos:2.1.0-consul";
     public static final String CB_DOCKER_CONTAINER_LOGROTATE = "sequenceiq/logrotate:v0.5.1";
-    public static final String CB_DOCKER_CONTAINER_MUNCHAUSEN = "sequenceiq/munchausen:0.5.5";
+    public static final String CB_DOCKER_CONTAINER_MUNCHAUSEN = "sequenceiq/munchausen:0.5.6";
 
     public static final String CB_DOCKER_RELOCATE = "true";
 
@@ -79,6 +79,8 @@ public class EnvironmentVariableConfig {
             .append("us-east-1:ami-2393ed49,")
             .append("us-west-1:ami-4af49b2a,")
             .append("us-west-2:ami-203c2a41")
+            //.append("eu-west-1:ami-06e54375,")
+            //.append("eu-central-1:ami-28253844")
             .toString();
     public static final String CB_OPENSTACK_IMAGE = "cb-centos71-amb212-2015-10-27";
     public static final String CB_GCP_SOURCE_IMAGE_PATH = "sequenceiqimage/cb-centos71-amb212-2015-10-279.tar.gz";
