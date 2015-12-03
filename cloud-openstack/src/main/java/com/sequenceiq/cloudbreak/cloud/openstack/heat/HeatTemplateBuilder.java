@@ -1,6 +1,5 @@
 package com.sequenceiq.cloudbreak.cloud.openstack.heat;
 
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_OPENSTACK_HEAT_TEMPLATE_PATH;
 import static org.springframework.ui.freemarker.FreeMarkerTemplateUtils.processTemplateIntoString;
 
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class HeatTemplateBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HeatTemplateBuilder.class);
 
-    @Value("${cb.openstack.heat.template.path:" + CB_OPENSTACK_HEAT_TEMPLATE_PATH + "}")
+    @Value("${cb.openstack.heat.template.path:}")
     private String openStackHeatTemplatePath;
 
 

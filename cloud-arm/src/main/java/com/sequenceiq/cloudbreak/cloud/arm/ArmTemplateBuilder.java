@@ -1,7 +1,5 @@
 package com.sequenceiq.cloudbreak.cloud.arm;
 
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_ARM_PARAMETER_PATH;
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_ARM_TEMPLATE_PATH;
 import static org.springframework.ui.freemarker.FreeMarkerTemplateUtils.processTemplateIntoString;
 
 import java.io.IOException;
@@ -35,10 +33,10 @@ public class ArmTemplateBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArmTemplateBuilder.class);
 
-    @Value("${cb.arm.template.path:" + CB_ARM_TEMPLATE_PATH + "}")
+    @Value("${cb.arm.template.path:}")
     private String armTemplatePath;
 
-    @Value("${cb.arm.parameter.path:" + CB_ARM_PARAMETER_PATH + "}")
+    @Value("${cb.arm.parameter.path:}")
     private String armTemplateParametersPath;
 
     @Inject

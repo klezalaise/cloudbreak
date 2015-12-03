@@ -1,7 +1,5 @@
 package com.sequenceiq.cloudbreak.cloud.gcp.service;
 
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_MAX_GCP_RESOURCE_NAME_LENGTH;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,13 +10,14 @@ import com.sequenceiq.cloudbreak.common.type.ResourceType;
 
 public class GcpResourceNameServiceTest {
 
+    private int maxResourceNameLength = 63;
+
     private ResourceNameService subject;
-    private final String maxResourceNameLength = CB_MAX_GCP_RESOURCE_NAME_LENGTH;
 
     @Before
     public void setUp() throws Exception {
         subject = new GcpResourceNameService();
-        ReflectionTestUtils.setField(subject, "maxResourceNameLength", Integer.parseInt(maxResourceNameLength));
+        ReflectionTestUtils.setField(subject, "maxResourceNameLength", maxResourceNameLength);
     }
 
     @Test
@@ -108,7 +107,7 @@ public class GcpResourceNameServiceTest {
         Assert.assertEquals("The resource name suffix is not the excepted one!", "thisisaverylon", resourceName.split("-")[0]);
         Assert.assertEquals("The instance group name is not the excepted one!", "thisisaverylonginstancegroup", resourceName.split("-")[1]);
         Assert.assertEquals("The private is not the excepted one!", "8999", resourceName.split("-")[2]);
-        Assert.assertTrue("The resource name length is wrong", resourceName.length() == Integer.parseInt(maxResourceNameLength));
+        Assert.assertTrue("The resource name length is wrong", resourceName.length() == maxResourceNameLength);
     }
 
     @Test
@@ -126,7 +125,7 @@ public class GcpResourceNameServiceTest {
         Assert.assertEquals("The resource name suffix is not the excepted one!", "s", resourceName.split("-")[0]);
         Assert.assertEquals("The instance group name is not the excepted one!", "thisisareallylonginstancenamewhichwillbes", resourceName.split("-")[1]);
         Assert.assertEquals("The private is not the excepted one!", "8999", resourceName.split("-")[2]);
-        Assert.assertTrue("The resource name length is wrong", resourceName.length() == Integer.parseInt(maxResourceNameLength));
+        Assert.assertTrue("The resource name length is wrong", resourceName.length() == maxResourceNameLength);
 
     }
 }

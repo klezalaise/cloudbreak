@@ -1,8 +1,7 @@
 package com.sequenceiq.cloudbreak.core.bootstrap.service;
 
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_CONTAINER_ORCHESTRATOR;
-
 import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ public class ContainerOrchestratorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ContainerOrchestratorResolver.class);
 
-    @Value("${cb.container.orchestrator:" + CB_CONTAINER_ORCHESTRATOR + "}")
+    @Value("${cb.container.orchestrator:}")
     private String containerOrchestratorName;
 
     @Resource

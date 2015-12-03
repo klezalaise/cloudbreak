@@ -1,16 +1,12 @@
 package com.sequenceiq.cloudbreak.conf;
 
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_DB_ENV_DB;
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_DB_ENV_PASS;
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_DB_ENV_USER;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-
-import java.util.Properties;
 
 import org.postgresql.Driver;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,13 +25,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class DatabaseConfig {
 
-    @Value("${cb.db.env.user:" + CB_DB_ENV_USER + "}")
+    @Value("${cb.db.env.user:}")
     private String dbUser;
 
-    @Value("${cb.db.env.pass:" + CB_DB_ENV_PASS + "}")
+    @Value("${cb.db.env.pass:}")
     private String dbPassword;
 
-    @Value("${cb.db.env.db:" + CB_DB_ENV_DB + "}")
+    @Value("${cb.db.env.db:}")
     private String dbName;
 
     @Value("${cb.hbm2ddl.strategy:validate}")

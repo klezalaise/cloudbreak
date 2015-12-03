@@ -1,11 +1,5 @@
 package com.sequenceiq.cloudbreak.service.image;
 
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_AWS_AMI_MAP;
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_AZURE_IMAGE_URI;
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_AZURE_RM_IMAGE;
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_GCP_SOURCE_IMAGE_PATH;
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_OPENSTACK_IMAGE;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
 import com.sequenceiq.cloudbreak.common.type.CloudPlatform;
 import com.sequenceiq.cloudbreak.controller.BadRequestException;
 import com.sequenceiq.cloudbreak.domain.Stack;
@@ -24,7 +17,7 @@ public class ImageNameUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageNameUtil.class);
 
-    @Value("${cb.azure.image.uri:}")
+    @Value("${cb.azure.classic.image.uri:}")
     private String azureImage;
 
     @Value("${cb.azure.rm.image.uri:}")
@@ -36,7 +29,7 @@ public class ImageNameUtil {
     @Value("${cb.openstack.image:}")
     private String openStackImage;
 
-    @Value("${cb.gcp.source.image.path:}")
+    @Value("${cb.gcp.image:}")
     private String gcpImage;
 
 
@@ -47,13 +40,13 @@ public class ImageNameUtil {
                 selectedImage = prepareAmis().get(region);
                 break;
             case AZURE:
-                selectedImage = selectImageName(azureImage, CB_AZURE_IMAGE_URI);
+                selectedImage = selectImageName(azureImage);
                 break;
             case GCP:
-                selectedImage = selectImageName(gcpImage, CB_GCP_SOURCE_IMAGE_PATH);
+                selectedImage = selectImageName(gcpImage);
                 break;
             case OPENSTACK:
-                selectedImage = selectImageName(openStackImage, CB_OPENSTACK_IMAGE);
+                selectedImage = selectImageName(openStackImage);
                 break;
             case AZURE_RM:
                 selectedImage = prepareAzureRmImages().get(region);
@@ -74,13 +67,13 @@ public class ImageNameUtil {
                 selectedImage = prepareAmis().get(stack.getRegion());
                 break;
             case AZURE:
-                selectedImage = selectImageName(azureImage, CB_AZURE_IMAGE_URI);
+                selectedImage = selectImageName(azureImage);
                 break;
             case GCP:
-                selectedImage = selectImageName(gcpImage, CB_GCP_SOURCE_IMAGE_PATH);
+                selectedImage = selectImageName(gcpImage);
                 break;
             case OPENSTACK:
-                selectedImage = selectImageName(openStackImage, CB_OPENSTACK_IMAGE);
+                selectedImage = selectImageName(openStackImage);
                 break;
             case AZURE_RM:
                 selectedImage = prepareAzureRmImages().get(stack.getRegion());
@@ -95,7 +88,7 @@ public class ImageNameUtil {
 
     private Map<String, String> prepareAmis() {
         Map<String, String> amisMap = new HashMap<>();
-        String awsImageNames = selectImageName(awsImage, CB_AWS_AMI_MAP);
+        String awsImageNames = selectImageName(awsImage);
         for (String s : awsImageNames.split(",")) {
             amisMap.put(s.split(":")[0], s.split(":")[1]);
         }
@@ -104,17 +97,14 @@ public class ImageNameUtil {
 
     private Map<String, String> prepareAzureRmImages() {
         Map<String, String> azureMap = new HashMap<>();
-        String azureImageNames = selectImageName(azureRmImage, CB_AZURE_RM_IMAGE);
+        String azureImageNames = selectImageName(azureRmImage);
         for (String s : azureImageNames.split(",")) {
             azureMap.put(s.split(":")[0], s.split(":")[1] + ":" + s.split(":")[2]);
         }
         return azureMap;
     }
 
-    private String selectImageName(String imageName, String defaultImageName) {
-        if (Strings.isNullOrEmpty(imageName)) {
-            return defaultImageName;
-        }
+    private String selectImageName(String imageName) {
         return imageName;
     }
 

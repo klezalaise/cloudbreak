@@ -1,7 +1,5 @@
 package com.sequenceiq.cloudbreak.service.image;
 
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_DOCKER_RELOCATE;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +26,7 @@ public class UserDataBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDataBuilder.class);
 
-    @Value("${cb.docker.relocate:" + CB_DOCKER_RELOCATE + "}")
+    @Value("${cb.docker.relocate:}")
     private Boolean relocateDocker;
 
     @Inject

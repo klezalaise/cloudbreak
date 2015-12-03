@@ -1,7 +1,5 @@
 package com.sequenceiq.cloudbreak.service.template;
 
-import static com.sequenceiq.cloudbreak.EnvironmentVariableConfig.CB_TEMPLATE_DEFAULTS;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +27,7 @@ import com.sequenceiq.cloudbreak.util.JsonUtil;
 public class SimpleTemplateLoaderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleTemplateLoaderService.class);
 
-    @Value("#{'${cb.template.defaults:" + CB_TEMPLATE_DEFAULTS + "}'.split(',')}")
+    @Value("#{'${cb.template.defaults:}'.split(',')}")
     private List<String> templateArray;
 
     @Inject
