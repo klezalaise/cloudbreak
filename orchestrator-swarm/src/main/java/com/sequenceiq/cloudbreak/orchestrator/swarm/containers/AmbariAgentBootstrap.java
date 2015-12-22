@@ -57,6 +57,7 @@ public class AmbariAgentBootstrap implements ContainerBootstrap {
                 .withName(name)
                 .withEnv(String.format("constraint:node==%s", nodeName),
                         String.format("CLOUD_PLATFORM=%s", cloudPlatform),
+                        "BRIDGE_IP=172.17.0.1",
                         "HADOOP_CLASSPATH=/data/jars/*:/usr/lib/hadoop/lib/*")
                 .withCmd("/start-agent"), nodeName);
 

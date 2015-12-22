@@ -53,6 +53,7 @@ public class AmbariServerBootstrap implements ContainerBootstrap {
                 .withEnv(String.format("constraint:node==%s", nodeName),
                         "POSTGRES_DB=localhost",
                         String.format("CLOUD_PLATFORM=%s", cloudPlatform),
+                        "BRIDGE_IP=172.17.0.1",
                         "SERVICE_NAME=ambari-8080")
                 .withCmd("/start-server"), nodeName);
 
