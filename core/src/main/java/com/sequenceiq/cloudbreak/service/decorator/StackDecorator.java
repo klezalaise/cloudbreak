@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.sequenceiq.cloudbreak.api.model.AdjustmentType;
 import com.sequenceiq.cloudbreak.controller.BadRequestException;
+import com.sequenceiq.cloudbreak.domain.Credential;
 import com.sequenceiq.cloudbreak.domain.FailurePolicy;
 import com.sequenceiq.cloudbreak.domain.Network;
 import com.sequenceiq.cloudbreak.domain.Stack;
@@ -41,17 +42,24 @@ public class StackDecorator implements Decorator<Stack> {
 
     @Override
     public Stack decorate(Stack subject, Object... data) {
-        subject.setSecurityGroup(securityGroupService.get((Long) data[DecorationData.SECURITY_GROUP_ID.ordinal()]));
-        subject.setCredential(credentialService.get((Long) data[DecorationData.CREDENTIAL_ID.ordinal()]));
-        int consulServers = getConsulServerCount((Integer) data[DecorationData.USR_CONSUL_SERVER_COUNT.ordinal()], subject.getFullNodeCount());
-        subject.setConsulServers(consulServers);
-        Network network = networkService.getById((Long) data[DecorationData.NETWORK_ID.ordinal()]);
-        subject.setNetwork(network);
+        Object credentialId = data[DecorationData.CREDENTIAL_ID.ordinal()];
+        if (credentialId != null) {
+            Credential credential = credentialService.get((Long) credentialId);
+            subject.setCloudPlatform(credential.cloudPlatform());
+            subject.setCredential(credential);
+            subject.setSecurityGroup(securityGroupService.get((Long) data[DecorationData.SECURITY_GROUP_ID.ordinal()]));
+            int consulServers = getConsulServerCount((Integer) data[DecorationData.USR_CONSUL_SERVER_COUNT.ordinal()], subject.getFullNodeCount());
+            subject.setConsulServers(consulServers);
+            Network network = networkService.getById((Long) data[DecorationData.NETWORK_ID.ordinal()]);
+            subject.setNetwork(network);
 
-        if (subject.getFailurePolicy() != null) {
-            validatFailurePolicy(subject, consulServers, subject.getFailurePolicy());
+            if (subject.getFailurePolicy() != null) {
+                validatFailurePolicy(subject, consulServers, subject.getFailurePolicy());
+            }
+            validate(subject);
+        } else {
+            subject.setCloudPlatform("BYOS");
         }
-        validate(subject);
         return subject;
     }
 

@@ -239,6 +239,8 @@ public class Stack implements ProvisionEntity {
     private Credential credential;
     @Column(columnDefinition = "TEXT")
     private String platformVariant;
+    @Column(columnDefinition = "TEXT")
+    private String cloudPlatform;
     @OneToOne(mappedBy = "stack", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Cluster cluster;
     @OneToMany(mappedBy = "stack", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -421,6 +423,14 @@ public class Stack implements ProvisionEntity {
         this.platformVariant = platformVariant;
     }
 
+    public String cloudPlatform() {
+        return cloudPlatform;
+    }
+
+    public void setCloudPlatform(String cloudPlatform) {
+        this.cloudPlatform = cloudPlatform;
+    }
+
     public List<Resource> getResourcesByType(ResourceType resourceType) {
         List<Resource> resourceList = new ArrayList<>();
         for (Resource resource : resources) {
@@ -495,10 +505,6 @@ public class Stack implements ProvisionEntity {
 
     public List<InstanceGroup> getInstanceGroupsAsList() {
         return new ArrayList<>(instanceGroups);
-    }
-
-    public String cloudPlatform() {
-        return credential.cloudPlatform();
     }
 
     public boolean isStackInDeletionPhase() {

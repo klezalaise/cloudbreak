@@ -8,6 +8,7 @@ import static com.sequenceiq.cloudbreak.api.model.Status.STOP_REQUESTED;
 import static com.sequenceiq.cloudbreak.api.model.Status.UPDATE_REQUESTED;
 import static com.sequenceiq.cloudbreak.cloud.model.Platform.platform;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ import com.google.common.collect.Iterables;
 import com.sequenceiq.cloudbreak.api.model.InstanceGroupAdjustmentJson;
 import com.sequenceiq.cloudbreak.api.model.InstanceStatus;
 import com.sequenceiq.cloudbreak.api.model.StackResponse;
+import com.sequenceiq.cloudbreak.api.model.Status;
 import com.sequenceiq.cloudbreak.api.model.StatusRequest;
 import com.sequenceiq.cloudbreak.common.type.APIResourceType;
 import com.sequenceiq.cloudbreak.common.type.CbUserRole;
@@ -242,7 +244,7 @@ public class StackService {
 
     @Transactional(Transactional.TxType.NEVER)
     public Stack create(CbUser user, Stack stack) {
-        Stack savedStack = null;
+        Stack savedStack;
         stack.setOwner(user.getUserId());
         stack.setAccount(user.getAccount());
         setPlatformVariant(stack);
@@ -250,11 +252,17 @@ public class StackService {
         try {
             savedStack = stackRepository.save(stack);
             MDCBuilder.buildMdcContext(savedStack);
-            instanceGroupRepository.save(savedStack.getInstanceGroups());
-            tlsSecurityService.copyClientKeys(stack.getId());
-            tlsSecurityService.storeSSHKeys(stack);
-            imageService.create(savedStack, connector.getPlatformParameters(stack));
-            flowManager.triggerProvisioning(new ProvisionRequest(platform(savedStack.cloudPlatform()), savedStack.getId()));
+            if (!"BYOS".equals(stack.cloudPlatform())) {
+                instanceGroupRepository.save(savedStack.getInstanceGroups());
+                tlsSecurityService.copyClientKeys(stack.getId());
+                tlsSecurityService.storeSSHKeys(stack);
+                imageService.create(savedStack, connector.getPlatformParameters(stack));
+                flowManager.triggerProvisioning(new ProvisionRequest(platform(savedStack.cloudPlatform()), savedStack.getId()));
+            } else {
+                savedStack.setStatus(Status.AVAILABLE);
+                savedStack.setCreated(new Date().getTime());
+                stackRepository.save(savedStack);
+            }
         } catch (DataIntegrityViolationException ex) {
             throw new DuplicateKeyValueException(APIResourceType.STACK, stack.getName(), ex);
         } catch (CloudbreakSecuritySetupException e) {
