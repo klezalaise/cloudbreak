@@ -54,6 +54,7 @@ import com.sequenceiq.cloudbreak.api.model.ClusterResponse;
 import com.sequenceiq.cloudbreak.api.model.HostGroupAdjustmentJson;
 import com.sequenceiq.cloudbreak.api.model.UserNamePasswordJson;
 import com.sequenceiq.cloudbreak.repository.ClusterRepository;
+import com.sequenceiq.cloudbreak.repository.ConstraintRepository;
 import com.sequenceiq.cloudbreak.repository.FileSystemRepository;
 import com.sequenceiq.cloudbreak.repository.HostGroupRepository;
 import com.sequenceiq.cloudbreak.repository.HostMetadataRepository;
@@ -96,6 +97,9 @@ public class AmbariClusterService implements ClusterService {
 
     @Inject
     private FileSystemRepository fileSystemRepository;
+
+    @Inject
+    private ConstraintRepository constraintRepository;
 
     @Inject
     private HostMetadataRepository hostMetadataRepository;
@@ -165,6 +169,9 @@ public class AmbariClusterService implements ClusterService {
         }
         if (clusterRepository.findByNameInAccount(cluster.getName(), user.getAccount()) != null) {
             throw new DuplicateKeyValueException(APIResourceType.CLUSTER, cluster.getName());
+        }
+        for (HostGroup hostGroup : cluster.getHostGroups()){
+            constraintRepository.save(hostGroup.getConstraint());
         }
         if (cluster.getFileSystem() != null) {
             fileSystemRepository.save(cluster.getFileSystem());
@@ -451,7 +458,8 @@ public class AmbariClusterService implements ClusterService {
 
     private Set<String> collectUpscaleCandidates(HostGroupAdjustmentJson adjustmentJson, Cluster cluster) {
         HostGroup hostGroup = hostGroupRepository.findHostGroupInClusterByName(cluster.getId(), adjustmentJson.getHostGroup());
-        Set<InstanceMetaData> unusedHostsInInstanceGroup = instanceMetadataRepository.findUnusedHostsInInstanceGroup(hostGroup.getInstanceGroup().getId());
+        // TODO: why instancegroups?
+        Set<InstanceMetaData> unusedHostsInInstanceGroup = instanceMetadataRepository.findUnusedHostsInInstanceGroup(hostGroup.getConstraint().getInstanceGroup().getId());
         Set<String> instanceIds = new HashSet<>();
         for (InstanceMetaData instanceMetaData : unusedHostsInInstanceGroup) {
             instanceIds.add(instanceMetaData.getPrivateIp());
@@ -516,11 +524,12 @@ public class AmbariClusterService implements ClusterService {
     }
 
     private void validateUnusedHosts(HostGroup hostGroup, int scalingAdjustment) {
-        Set<InstanceMetaData> unusedHostsInInstanceGroup = instanceMetadataRepository.findUnusedHostsInInstanceGroup(hostGroup.getInstanceGroup().getId());
+        // TODO: why instancegroups?
+        Set<InstanceMetaData> unusedHostsInInstanceGroup = instanceMetadataRepository.findUnusedHostsInInstanceGroup(hostGroup.getConstraint().getInstanceGroup().getId());
         if (unusedHostsInInstanceGroup.size() < scalingAdjustment) {
             throw new BadRequestException(String.format(
                     "There are %s unregistered instances in instance group '%s'. %s more instances needed to complete this request.",
-                    unusedHostsInInstanceGroup.size(), hostGroup.getInstanceGroup().getGroupName(), scalingAdjustment - unusedHostsInInstanceGroup.size()));
+                    unusedHostsInInstanceGroup.size(), hostGroup.getConstraint().getInstanceGroup().getGroupName(), scalingAdjustment - unusedHostsInInstanceGroup.size()));
         }
     }
 

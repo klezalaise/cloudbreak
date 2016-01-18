@@ -22,4 +22,6 @@ public interface ClusterRepository extends CrudRepository<Cluster, Long> {
 
     Cluster findByNameInAccount(@Param("name") String name, @Param("account") String account);
 
+    List<Cluster> findAllClustersForConstraintTemplate(@Param("id") Long id);
+
 }

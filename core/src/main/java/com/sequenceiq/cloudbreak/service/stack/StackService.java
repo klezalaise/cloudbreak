@@ -440,7 +440,8 @@ public class StackService {
         HostGroup hostGroup = Iterables.find(stack.getCluster().getHostGroups(), new Predicate<HostGroup>() {
             @Override
             public boolean apply(@Nullable HostGroup input) {
-                return input.getInstanceGroup().getGroupName().equals(instanceGroupAdjustmentJson.getInstanceGroup());
+                // TODO: why instancegroups?
+                return input.getConstraint().getInstanceGroup().getGroupName().equals(instanceGroupAdjustmentJson.getInstanceGroup());
             }
         });
         if (hostGroup == null) {

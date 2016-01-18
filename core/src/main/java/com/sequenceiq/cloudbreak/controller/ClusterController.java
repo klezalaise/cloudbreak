@@ -76,7 +76,7 @@ public class ClusterController implements ClusterEndpoint {
         MDCBuilder.buildUserMdcContext(user);
         fileSystemValidator.validateFileSystem(stackService.getById(stackId).cloudPlatform(), request.getFileSystem());
         Cluster cluster = conversionService.convert(request, Cluster.class);
-        cluster = clusterDecorator.decorate(cluster, stackId, request.getBlueprintId(), request.getHostGroups(), request.getValidateBlueprint());
+        cluster = clusterDecorator.decorate(cluster, stackId, user, request.getBlueprintId(), request.getHostGroups(), request.getValidateBlueprint());
         clusterService.create(user, stackId, cluster);
         return Response.status(Response.Status.ACCEPTED).build();
     }
@@ -113,6 +113,7 @@ public class ClusterController implements ClusterEndpoint {
 
     @Override
     public Response put(Long stackId, UpdateClusterJson updateJson) throws CloudbreakSecuritySetupException {
+        CbUser user = authenticatedUserService.getCbUser();
         Stack stack = stackService.get(stackId);
         MDCBuilder.buildMdcContext(stack);
         UserNamePasswordJson userNamePasswordJson = updateJson.getUserNamePasswordJson();
@@ -163,7 +164,8 @@ public class ClusterController implements ClusterEndpoint {
         Set<HostGroup> hostGroups = new HashSet<>();
         for (HostGroupJson json : updateJson.getHostgroups()) {
             HostGroup hostGroup = conversionService.convert(json, HostGroup.class);
-            hostGroup = hostGroupDecorator.decorate(hostGroup, stackId, json.getInstanceGroupName(), json.getRecipeIds(), false);
+            // TODO:
+            hostGroup = hostGroupDecorator.decorate(hostGroup, stackId, json.getConstraint(), json.getRecipeIds(), false);
             hostGroups.add(hostGroupService.save(hostGroup));
         }
         AmbariStackDetailsJson stackDetails = updateJson.getAmbariStackDetails();

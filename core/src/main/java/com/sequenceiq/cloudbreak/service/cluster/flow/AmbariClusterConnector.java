@@ -925,7 +925,7 @@ public class AmbariClusterConnector {
         for (HostGroup hostGroup : hostGroups) {
             List<Map<String, String>> instanceMetaMapping = new ArrayList<>();
             Map<String, String> topologyMapping = getTopologyMapping(hostGroup);
-            List<InstanceMetaData> metas = instanceMetadataRepository.findAliveInstancesInInstanceGroup(hostGroup.getInstanceGroup().getId());
+            List<InstanceMetaData> metas = instanceMetadataRepository.findAliveInstancesInInstanceGroup(hostGroup.getConstraint().getInstanceGroup().getId());
             for (InstanceMetaData meta : metas) {
                 Map instanceMeta = new HashMap();
                 instanceMeta.put(FQDN, meta.getDiscoveryFQDN());
@@ -964,7 +964,8 @@ public class AmbariClusterConnector {
     }
 
     private List<String> findFreeHosts(Long stackId, HostGroup hostGroup, int scalingAdjustment) {
-        Set<InstanceMetaData> unregisteredHosts = instanceMetadataRepository.findUnregisteredHostsInInstanceGroup(hostGroup.getInstanceGroup().getId());
+        //TODO
+        Set<InstanceMetaData> unregisteredHosts = instanceMetadataRepository.findUnregisteredHostsInInstanceGroup(hostGroup.getConstraint().getInstanceGroup().getId());
         Set<InstanceMetaData> instances = FluentIterable.from(unregisteredHosts).limit(scalingAdjustment).toSet();
         eventService.fireCloudbreakInstanceGroupEvent(stackId, Status.UPDATE_IN_PROGRESS.name(),
                 cloudbreakMessagesService.getMessage(Msg.AMBARI_CLUSTER_ADDING_NODE_TO_HOSTGROUP.code(),

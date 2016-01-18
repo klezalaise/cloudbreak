@@ -35,6 +35,12 @@ public class ModelDescriptions {
         public static final String PARAMETERS = "cloud specific parameters for template";
     }
 
+    public static class ConstraintTemplateModelDescription {
+        public static final String CPU = "number of CPU cores needed for the Ambari node";
+        public static final String MEMORY = "memory needed for the Ambari container (GB)";
+        public static final String DISK = "disk size needed for an Ambari node (GB)";
+    }
+
     public static class StackModelDescription {
         public static final String STACK_ID = "id of the stack";
         public static final String STACK_NAME = "name of the stack";
@@ -112,6 +118,9 @@ public class ModelDescriptions {
     public static class HostGroupModelDescription {
         public static final String RECIPE_IDS = "referenced recipe ids";
         public static final String HOST_GROUP_NAME = "name of the host group";
+        public static final String CONSTRAINT = "instance group or resource constraint for a hostgroup";
+        public static final String INSTANCE_GROUP = "name of an instance group where the hostgroup will be deployed";
+        public static final String CONSTRAINT_NAME = "name of a constraint template that defines the resource constraints for the hostgroup";
     }
 
     public static class UserNamePasswordModelDescription {

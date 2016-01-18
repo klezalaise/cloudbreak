@@ -3,16 +3,12 @@ package com.sequenceiq.cloudbreak.converter;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
-import com.sequenceiq.cloudbreak.controller.BadRequestException;
 import com.sequenceiq.cloudbreak.api.model.HostGroupJson;
 import com.sequenceiq.cloudbreak.api.model.InstanceGroupJson;
 import com.sequenceiq.cloudbreak.api.model.StackValidationRequest;
@@ -57,21 +53,22 @@ public class JsonToStackValidationConverter extends AbstractConversionServiceAwa
 
     private Set<HostGroup> convertHostGroupsFromJson(Set<InstanceGroup> instanceGroups, final Set<HostGroupJson> hostGroupsJsons) {
         Set<HostGroup> hostGroups = new HashSet<>();
-        for (final HostGroupJson json : hostGroupsJsons) {
-            HostGroup hostGroup = new HostGroup();
-            hostGroup.setName(json.getName());
-            InstanceGroup instanceGroup = FluentIterable.from(instanceGroups).firstMatch(new Predicate<InstanceGroup>() {
-                @Override
-                public boolean apply(@Nullable InstanceGroup instanceGroup) {
-                    return instanceGroup.getGroupName().equals(json.getInstanceGroupName());
-                }
-            }).get();
-            if (instanceGroup == null) {
-                throw new BadRequestException(String.format("Cannot find instance group named '%s' in instance group list", json.getInstanceGroupName()));
-            }
-            hostGroup.setInstanceGroup(instanceGroup);
-            hostGroups.add(hostGroup);
-        }
+        //TODO
+//        for (final HostGroupJson json : hostGroupsJsons) {
+//            HostGroup hostGroup = new HostGroup();
+//            hostGroup.setName(json.getName());
+//            InstanceGroup instanceGroup = FluentIterable.from(instanceGroups).firstMatch(new Predicate<InstanceGroup>() {
+//                @Override
+//                public boolean apply(@Nullable InstanceGroup instanceGroup) {
+//                    return instanceGroup.getGroupName().equals(json.getInstanceGroupName());
+//                }
+//            }).get();
+//            if (instanceGroup == null) {
+//                throw new BadRequestException(String.format("Cannot find instance group named '%s' in instance group list", json.getInstanceGroupName()));
+//            }
+//            hostGroup.setInstanceGroup(instanceGroup);
+//            hostGroups.add(hostGroup);
+//        }
         return hostGroups;
     }
 

@@ -2,30 +2,78 @@ package com.sequenceiq.cloudbreak.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+
+import com.sequenceiq.cloudbreak.common.type.ResourceStatus;
 
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"account", "name"}),
 })
+@NamedQueries({
+        @NamedQuery(
+                name = "ConstraintTemplate.findForUser",
+                query = "SELECT t FROM ConstraintTemplate t "
+                        + "WHERE t.owner= :user AND deleted IS NOT TRUE "
+                        + "AND t.status <> 'DEFAULT_DELETED' "),
+        @NamedQuery(
+                name = "ConstraintTemplate.findPublicInAccountForUser",
+                query = "SELECT t FROM ConstraintTemplate t "
+                        + "WHERE ((t.account= :account AND t.publicInAccount= true) "
+                        + "OR t.owner= :user) AND deleted IS NOT TRUE "
+                        + "AND t.status <> 'DEFAULT_DELETED' "),
+        @NamedQuery(
+                name = "ConstraintTemplate.findAllInAccount",
+                query = "SELECT t FROM ConstraintTemplate t "
+                        + "WHERE t.account= :account AND deleted IS NOT TRUE "
+                        + "AND t.status <> 'DEFAULT_DELETED' "),
+        @NamedQuery(
+                name = "ConstraintTemplate.findOneByName",
+                query = "SELECT t FROM ConstraintTemplate t "
+                        + "WHERE t.name= :name and t.account= :account AND deleted IS NOT TRUE "
+                        + "AND t.status <> 'DEFAULT_DELETED' "),
+        @NamedQuery(
+                name = "ConstraintTemplate.findByIdInAccount",
+                query = "SELECT t FROM ConstraintTemplate t "
+                        + "WHERE t.id= :id and t.account= :account AND deleted IS NOT TRUE "
+                        + "AND t.status <> 'DEFAULT_DELETED' "),
+        @NamedQuery(
+                name = "ConstraintTemplate.findByNameInAccount",
+                query = "SELECT t FROM ConstraintTemplate t "
+                        + "WHERE t.name= :name and ((t.account= :account and t.publicInAccount=true) or t.owner= :owner) "
+                        + "AND deleted IS NOT TRUE "
+                        + "AND t.status <> 'DEFAULT_DELETED' "),
+        @NamedQuery(
+                name = "ConstraintTemplate.findByNameInUser",
+                query = "SELECT t FROM ConstraintTemplate t "
+                        + "WHERE t.owner= :owner and t.name= :name AND deleted IS NOT TRUE "
+                        + "AND t.status <> 'DEFAULT_DELETED' "),
+        @NamedQuery(
+                name = "ConstraintTemplate.findAllDefaultInAccount",
+                query = "SELECT t FROM ConstraintTemplate t "
+                        + "WHERE t.account= :account "
+                        + "AND (t.status = 'DEFAULT_DELETED' OR t.status = 'DEFAULT') ")
+})
 public class ConstraintTemplate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "constraint_template_generator")
-    @SequenceGenerator(name = "constraint_template_generator", sequenceName = "constraint_template_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "constraint_template_generator", sequenceName = "constrainttemplate_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(nullable = false)
     private String name;
     @Column(length = 1000000, columnDefinition = "TEXT")
     private String description;
-
-    private String instanceType;
 
     private String owner;
     private String account;
@@ -35,6 +83,11 @@ public class ConstraintTemplate {
     private Double cpu;
     private Double memory;
     private Double disk;
+
+    private boolean deleted;
+
+    @Enumerated(EnumType.STRING)
+    private ResourceStatus status;
 
     public Long getId() {
         return id;
@@ -58,14 +111,6 @@ public class ConstraintTemplate {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getInstanceType() {
-        return instanceType;
-    }
-
-    public void setInstanceType(String instanceType) {
-        this.instanceType = instanceType;
     }
 
     public String getOwner() {
@@ -114,5 +159,21 @@ public class ConstraintTemplate {
 
     public void setDisk(Double disk) {
         this.disk = disk;
+    }
+
+    public ResourceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ResourceStatus status) {
+        this.status = status;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }
