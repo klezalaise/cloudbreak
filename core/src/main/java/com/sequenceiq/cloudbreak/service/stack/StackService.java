@@ -55,6 +55,7 @@ import com.sequenceiq.cloudbreak.logger.MDCBuilder;
 import com.sequenceiq.cloudbreak.repository.ClusterRepository;
 import com.sequenceiq.cloudbreak.repository.InstanceGroupRepository;
 import com.sequenceiq.cloudbreak.repository.InstanceMetaDataRepository;
+import com.sequenceiq.cloudbreak.repository.OrchestratorRepository;
 import com.sequenceiq.cloudbreak.repository.SecurityRuleRepository;
 import com.sequenceiq.cloudbreak.repository.StackRepository;
 import com.sequenceiq.cloudbreak.repository.StackUpdater;
@@ -90,6 +91,8 @@ public class StackService {
     private InstanceMetaDataRepository instanceMetaDataRepository;
     @Inject
     private InstanceGroupRepository instanceGroupRepository;
+    @Inject
+    private OrchestratorRepository orchestratorRepository;
     @Inject
     private TlsSecurityService tlsSecurityService;
     @Inject
@@ -259,6 +262,7 @@ public class StackService {
                 imageService.create(savedStack, connector.getPlatformParameters(stack));
                 flowManager.triggerProvisioning(new ProvisionRequest(platform(savedStack.cloudPlatform()), savedStack.getId()));
             } else {
+                orchestratorRepository.save(stack.getOrchestrator());
                 savedStack.setStatus(Status.AVAILABLE);
                 savedStack.setCreated(new Date().getTime());
                 stackRepository.save(savedStack);
@@ -474,7 +478,11 @@ public class StackService {
             throw new BadRequestException("Stacks can be deleted only by account admins or owners.");
         }
         if (!stack.isDeleteCompleted()) {
-            flowManager.triggerTermination(new StackDeleteRequest(platform(stack.cloudPlatform()), stack.getId()));
+            if (!"BYOS".equals(stack.cloudPlatform())) {
+                flowManager.triggerTermination(new StackDeleteRequest(platform(stack.cloudPlatform()), stack.getId()));
+            } else {
+
+            }
         } else {
             LOGGER.info("Stack is already deleted.");
         }

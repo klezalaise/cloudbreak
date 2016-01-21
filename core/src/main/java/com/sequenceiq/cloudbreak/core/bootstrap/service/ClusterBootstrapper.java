@@ -114,6 +114,7 @@ public class ClusterBootstrapper {
                     new ContainerOrchestratorClusterContext(stack, containerOrchestrator, gatewayConfig, nodes),
                     POLLING_INTERVAL,
                     MAX_POLLING_ATTEMPTS);
+            // TODO: save orchestrator stuff here
             if (TIMEOUT.equals(pollingResult)) {
                 clusterBootstrapperErrorHandler.terminateFailedNodes(containerOrchestrator, stack, gatewayConfig, nodes);
             }

@@ -27,6 +27,12 @@ public class ModelDescriptions {
         public static final String PARAMETERS = "cloud specific parameters for credential";
     }
 
+    public static class OrchestratorModelDescription {
+        public static final String TYPE = "type of the orchestrator (Swarm or Marathon)";
+        public static final String PARAMETERS = "orchestrator specific parameters, like authentication details";
+        public static final String ENDPOINT = "endpoint for the container orchestration api";
+    }
+
     public static class TemplateModelDescription {
         public static final String VOLUME_COUNT = "number of volumes";
         public static final String VOLUME_SIZE = "size of volumes";
@@ -58,12 +64,12 @@ public class ModelDescriptions {
         public static final String STACK_STATUS = "status of the stack";
         public static final String STATUS_REASON = "status message of the stack";
         public static final String AMBARI_IP = "public ambari ip of the stack";
-        public static final String HASH = "unique hash identifier for stack";
         public static final String BLUEPRINT_ID = "id of the referenced blueprint";
         public static final String NETWORK_ID = "network resource id for the stack";
         public static final String CERTIFICATE = "certificate used by the gateway";
         public static final String CLUSTER_STATUS = "status of the cluster";
         public static final String PLATFORM_VARIANT = "cloud provider api variant";
+        public static final String ORCHESTRATOR = "the details of the container orchestrator api to use";
     }
 
     public static class ClusterModelDescription {

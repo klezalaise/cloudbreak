@@ -261,6 +261,8 @@ public class Stack implements ProvisionEntity {
     private Network network;
     @ManyToOne
     private SecurityGroup securityGroup;
+    @OneToOne
+    private Orchestrator orchestrator;
     private Long created;
 
     public Set<InstanceGroup> getInstanceGroups() {
@@ -405,6 +407,14 @@ public class Stack implements ProvisionEntity {
 
     public void setSecurityConfig(SecurityConfig securityConfig) {
         this.securityConfig = securityConfig;
+    }
+
+    public Orchestrator getOrchestrator() {
+        return orchestrator;
+    }
+
+    public void setOrchestrator(Orchestrator orchestrator) {
+        this.orchestrator = orchestrator;
     }
 
     public String getAvailabilityZone() {

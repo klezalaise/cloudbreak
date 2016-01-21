@@ -45,7 +45,7 @@ public class BlueprintValidator {
                 validateHostGroup(hostGroupNode, hostGroupMap, blueprintServiceComponentMap);
             }
             validateBlueprintServiceComponents(blueprintServiceComponentMap);
-        }  catch (IOException e) {
+        } catch (IOException e) {
             throw new BadRequestException(String.format("Blueprint [%s] can not be parsed from JSON.", blueprint.getId()));
         }
     }
@@ -67,18 +67,21 @@ public class BlueprintValidator {
             throw new BadRequestException(String.format("The host groups in the blueprint must match the hostgroups in the request."));
         }
 
-        Set<Long> instanceGroupNames = new HashSet<>();
-        for (HostGroup hostGroup : hostGroups) {
-            //TODO
-//            if (instanceGroupNames.contains(hostGroup.getInstanceGroup().getGroupName())) {
-//                throw new BadRequestException(String.format(
-//                        "Instance group '%s' is assigned to more than one hostgroup.", hostGroup.getInstanceGroup().getGroupName()));
-//            }
-//            instanceGroupNames.add(hostGroup.getInstanceGroup().getId());
-        }
+        if (!instanceGroups.isEmpty()) {
+            Set<String> instanceGroupNames = new HashSet<>();
+            for (HostGroup hostGroup : hostGroups) {
 
-        if (instanceGroups.size() - GATEWAY.getFixedNodeCount() != hostGroupsInRequest.size()) {
-            throw new BadRequestException("The number of hostgroups must match the number of instance groups on the stack");
+                String instanceGroupName = hostGroup.getConstraint().getInstanceGroup().getGroupName();
+                if (instanceGroupNames.contains(instanceGroupName)) {
+                    throw new BadRequestException(String.format(
+                            "Instance group '%s' is assigned to more than one hostgroup.", instanceGroupName));
+                }
+                instanceGroupNames.add(instanceGroupName);
+
+            }
+            if (instanceGroups.size() - GATEWAY.getFixedNodeCount() != hostGroupsInRequest.size()) {
+                throw new BadRequestException("The number of hostgroups must match the number of instance groups on the stack");
+            }
         }
     }
 
@@ -186,7 +189,7 @@ public class BlueprintValidator {
                 int maxCardinality = stackServiceComponentDescriptor.getMaxCardinality();
                 if (!isNodeCountCorrect(nodeCount, minCardinality, maxCardinality)) {
                     throw new BadRequestException(String.format("Incorrect number of '%s' components are in '%s' hostgroups: count: %d, min: %d max: %d",
-                        componentName, blueprintServiceComponent.getHostgroups().toString(), nodeCount, minCardinality, maxCardinality));
+                            componentName, blueprintServiceComponent.getHostgroups().toString(), nodeCount, minCardinality, maxCardinality));
                 }
             }
         }
