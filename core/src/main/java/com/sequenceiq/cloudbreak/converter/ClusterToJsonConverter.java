@@ -43,6 +43,7 @@ public class ClusterToJsonConverter extends AbstractConversionServiceAwareConver
     public ClusterResponse convert(Cluster source) {
         ClusterResponse clusterResponse = new ClusterResponse();
         clusterResponse.setId(source.getId());
+        clusterResponse.setName(source.getName());
         clusterResponse.setStatus(source.getStatus().name());
         clusterResponse.setStatusReason(source.getStatusReason());
         if (source.getBlueprint() != null) {
