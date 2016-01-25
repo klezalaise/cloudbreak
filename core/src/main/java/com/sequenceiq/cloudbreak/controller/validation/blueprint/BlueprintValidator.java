@@ -70,14 +70,12 @@ public class BlueprintValidator {
         if (!instanceGroups.isEmpty()) {
             Set<String> instanceGroupNames = new HashSet<>();
             for (HostGroup hostGroup : hostGroups) {
-
                 String instanceGroupName = hostGroup.getConstraint().getInstanceGroup().getGroupName();
                 if (instanceGroupNames.contains(instanceGroupName)) {
                     throw new BadRequestException(String.format(
                             "Instance group '%s' is assigned to more than one hostgroup.", instanceGroupName));
                 }
                 instanceGroupNames.add(instanceGroupName);
-
             }
             if (instanceGroups.size() - GATEWAY.getFixedNodeCount() != hostGroupsInRequest.size()) {
                 throw new BadRequestException("The number of hostgroups must match the number of instance groups on the stack");

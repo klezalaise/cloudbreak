@@ -107,6 +107,7 @@ public interface StackEndpoint {
 
     @DELETE
     @Path("stacks/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = StackOpDescription.DELETE_BY_ID, produces = ContentType.JSON, notes = Notes.STACK_NOTES)
     void delete(@PathParam(value = "id") Long id, @QueryParam("forced") @DefaultValue("false") Boolean forced);
 

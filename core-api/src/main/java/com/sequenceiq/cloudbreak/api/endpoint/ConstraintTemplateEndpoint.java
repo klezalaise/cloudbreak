@@ -1,4 +1,4 @@
-package com.sequenceiq.cloudbreak.api;
+package com.sequenceiq.cloudbreak.api.endpoint;
 
 import java.util.Set;
 

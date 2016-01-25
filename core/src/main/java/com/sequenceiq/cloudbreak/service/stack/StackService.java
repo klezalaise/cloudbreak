@@ -72,6 +72,7 @@ import com.sequenceiq.cloudbreak.service.stack.event.StackDeleteRequest;
 import com.sequenceiq.cloudbreak.service.stack.event.StackForcedDeleteRequest;
 import com.sequenceiq.cloudbreak.service.stack.event.StackStatusUpdateRequest;
 import com.sequenceiq.cloudbreak.service.stack.event.UpdateInstancesRequest;
+import com.sequenceiq.cloudbreak.service.stack.flow.TerminationService;
 
 @Service
 @Transactional
@@ -95,6 +96,8 @@ public class StackService {
     private OrchestratorRepository orchestratorRepository;
     @Inject
     private TlsSecurityService tlsSecurityService;
+    @Inject
+    private TerminationService terminationService;
     @Inject
     private FlowManager flowManager;
     @Inject
@@ -253,6 +256,9 @@ public class StackService {
         setPlatformVariant(stack);
         MDCBuilder.buildMdcContext(stack);
         try {
+            if (stack.getOrchestrator() != null) {
+                orchestratorRepository.save(stack.getOrchestrator());
+            }
             savedStack = stackRepository.save(stack);
             MDCBuilder.buildMdcContext(savedStack);
             if (!"BYOS".equals(stack.cloudPlatform())) {
@@ -262,7 +268,6 @@ public class StackService {
                 imageService.create(savedStack, connector.getPlatformParameters(stack));
                 flowManager.triggerProvisioning(new ProvisionRequest(platform(savedStack.cloudPlatform()), savedStack.getId()));
             } else {
-                orchestratorRepository.save(stack.getOrchestrator());
                 savedStack.setStatus(Status.AVAILABLE);
                 savedStack.setCreated(new Date().getTime());
                 stackRepository.save(savedStack);
@@ -468,7 +473,7 @@ public class StackService {
             throw new BadRequestException(String.format("Stack '%s' does not have an instanceGroup named '%s'.", stack.getId(), instanceGroup));
         }
         if (isGateway(instanceGroup.getInstanceGroupType())) {
-            throw new BadRequestException("The Ambari server instancegroup modification is not enabled.");
+            throw new BadRequestException("The Ambari server instance group modification is not enabled.");
         }
     }
 
@@ -481,7 +486,7 @@ public class StackService {
             if (!"BYOS".equals(stack.cloudPlatform())) {
                 flowManager.triggerTermination(new StackDeleteRequest(platform(stack.cloudPlatform()), stack.getId()));
             } else {
-
+                terminationService.finalizeTermination(stack.getId(), false);
             }
         } else {
             LOGGER.info("Stack is already deleted.");

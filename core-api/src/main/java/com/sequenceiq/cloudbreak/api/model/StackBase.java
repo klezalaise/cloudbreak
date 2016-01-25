@@ -39,7 +39,7 @@ public abstract class StackBase implements JsonEntity {
     @ApiModelProperty(value = StackModelDescription.CREDENTIAL_ID, required = true)
     private Long credentialId;
     @ApiModelProperty(StackModelDescription.FAILURE_ACTION)
-    private OnFailureAction onFailureAction = OnFailureAction.ROLLBACK;
+    private OnFailureAction onFailureAction = OnFailureAction.DO_NOTHING;
     @ApiModelProperty(StackModelDescription.FAILURE_POLICY)
     private FailurePolicyJson failurePolicy;
     @Valid
