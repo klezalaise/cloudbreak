@@ -19,7 +19,7 @@ public class ContainerConstraint {
     private final List<String> env;
     private final String networkMode;
     private final TcpPortBinding tcpPortBinding;
-    private final Map<String, String> privateIpsByHostname;
+    private final List<String> hosts;
     private final String name;
 
 
@@ -34,7 +34,7 @@ public class ContainerConstraint {
         this.env = builder.env;
         this.networkMode = builder.networkMode;
         this.tcpPortBinding = builder.tcpPortBinding;
-        this.privateIpsByHostname = builder.privateIpsByHostname;
+        this.hosts = builder.hosts;
         this.name = builder.name;
     }
 
@@ -78,8 +78,8 @@ public class ContainerConstraint {
         return tcpPortBinding;
     }
 
-    public Map<String, String> getPrivateIpsByHostname() {
-        return privateIpsByHostname;
+    public List<String> getHosts() {
+        return hosts;
     }
 
     public String getName() {
@@ -98,7 +98,7 @@ public class ContainerConstraint {
         private List<String> env = new ArrayList<>();
         private String networkMode;
         private TcpPortBinding tcpPortBinding;
-        private Map<String, String> privateIpsByHostname = new HashMap<>();
+        private List<String> hosts = new ArrayList<>();
         private String name;
 
         public Builder containerConstraint(ContainerConstraint containerConstraint) {
@@ -112,7 +112,7 @@ public class ContainerConstraint {
             this.env = containerConstraint.getEnv();
             this.networkMode = containerConstraint.getNetworkMode();
             this.tcpPortBinding = containerConstraint.getTcpPortBinding();
-            this.privateIpsByHostname = containerConstraint.getPrivateIpsByHostname();
+            this.hosts = containerConstraint.getHosts();
             this.name = containerConstraint.getName();
             return this;
         }
@@ -167,8 +167,8 @@ public class ContainerConstraint {
             return this;
         }
 
-        public Builder addPrivateIpsByHostname(Map<String, String> privateIpsByHostname) {
-            this.privateIpsByHostname.putAll(privateIpsByHostname);
+        public Builder addHosts(List<String> hosts) {
+            this.hosts.addAll(hosts);
             return this;
         }
 

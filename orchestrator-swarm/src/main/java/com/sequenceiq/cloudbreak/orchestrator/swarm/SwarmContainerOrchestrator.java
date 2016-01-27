@@ -15,6 +15,12 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.Bind;
@@ -42,11 +48,8 @@ import com.sequenceiq.cloudbreak.orchestrator.state.ExitCriteriaModel;
 import com.sequenceiq.cloudbreak.orchestrator.swarm.builder.BindsBuilder;
 import com.sequenceiq.cloudbreak.orchestrator.swarm.containers.MunchausenBootstrap;
 import com.sequenceiq.cloudbreak.orchestrator.swarm.containers.SwarmContainerBootstrap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import org.springframework.util.StringUtils;
 
+@Component
 public class SwarmContainerOrchestrator extends SimpleContainerOrchestrator {
     private static final Logger LOGGER = LoggerFactory.getLogger(SwarmContainerOrchestrator.class);
     private static final int READ_TIMEOUT = 180_000;
@@ -112,16 +115,14 @@ public class SwarmContainerOrchestrator extends SimpleContainerOrchestrator {
         try {
             List<Future<Boolean>> futures = new ArrayList<>();
             int i = 0;
-            for (Entry<String, String> entry : constraint.getPrivateIpsByHostname().entrySet()) {
-                String hostname = entry.getKey();
-                String privateIp = entry.getValue();
+            for (String host : constraint.getHosts()) {
                 DockerClient dockerApiClient = swarmClient(cred);
                 String name = String.format("%s-%s", constraint.getName(), String.valueOf(new Date().getTime()) + i++);
-                CreateContainerCmd createCmd = decorateCreateContainerCmd(image, constraint, hostname, dockerApiClient, name, privateIp);
-                ContainerBootstrap bootstrap = new SwarmContainerBootstrap(dockerApiClient, hostname, createCmd);
+                CreateContainerCmd createCmd = decorateCreateContainerCmd(image, constraint, host, dockerApiClient, name);
+                ContainerBootstrap bootstrap = new SwarmContainerBootstrap(dockerApiClient, host, createCmd);
                 Callable<Boolean> runner = runner(bootstrap, getExitCriteria(), exitCriteriaModel, MDC.getCopyOfContextMap());
                 futures.add(getParallelContainerRunner().submit(runner));
-                containerInfos.add(new ContainerInfo(name, name, entry.getValue(), image));
+                containerInfos.add(new ContainerInfo(name, name, host, image));
             }
             for (Future<Boolean> future : futures) {
                 future.get();
@@ -219,8 +220,8 @@ public class SwarmContainerOrchestrator extends SimpleContainerOrchestrator {
     }
 
     private CreateContainerCmd decorateCreateContainerCmd(String image, ContainerConstraint constraint, String hostname,
-                                                                DockerClient dockerApiClient, String name, String privateIp) {
-        String[] env = createEnv(constraint, hostname, privateIp);
+                                                                DockerClient dockerApiClient, String name) {
+        String[] env = createEnv(constraint, hostname);
         String[] cmd = constraint.getCmd();
         CreateContainerCmd createCmd = dockerApiClient.createContainerCmd(image)
                 .withName(name)
@@ -250,10 +251,9 @@ public class SwarmContainerOrchestrator extends SimpleContainerOrchestrator {
         return createCmd;
     }
 
-    private String[] createEnv(ContainerConstraint constraint, String hostname, String privateIp) {
+    private String[] createEnv(ContainerConstraint constraint, String hostname) {
         List<String> env = new ArrayList<>(constraint.getEnv());
         env.add(format("constraint:node==%s", hostname));
-        env.add(format("CONSUL_HOST=%s", privateIp));
         String[] result = new String[env.size()];
         return env.toArray(result);
     }
@@ -366,7 +366,7 @@ public class SwarmContainerOrchestrator extends SimpleContainerOrchestrator {
     }
 
     DockerClient swarmClient(OrchestrationCredential cred) {
-        return DockerClientBuilder.getInstance(getSwarmClientConfig(cred.getPublicApiAddress(), cred.getTlsCertificateDir()))
+        return DockerClientBuilder.getInstance(getSwarmClientConfig(cred.getApiEndpoint(), (String) cred.getProperties().get("certificateDir")))
                 .withDockerCmdExecFactory(new DockerCmdExecFactoryImpl().withReadTimeout(READ_TIMEOUT))
                 .build();
     }

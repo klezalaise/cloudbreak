@@ -12,10 +12,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,11 +36,10 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.collect.Maps;
+import com.sequenceiq.cloudbreak.api.model.FileSystemType;
 import com.sequenceiq.cloudbreak.controller.validation.blueprint.StackServiceComponentDescriptorMapFactory;
-import com.sequenceiq.cloudbreak.core.CloudbreakException;
 import com.sequenceiq.cloudbreak.core.bootstrap.service.ExecutorBasedParallelContainerRunner;
 import com.sequenceiq.cloudbreak.core.bootstrap.service.StackDeletionBasedExitCriteria;
-import com.sequenceiq.cloudbreak.api.model.FileSystemType;
 import com.sequenceiq.cloudbreak.orchestrator.ContainerOrchestrator;
 import com.sequenceiq.cloudbreak.orchestrator.executor.ParallelContainerRunner;
 import com.sequenceiq.cloudbreak.orchestrator.state.ExitCriteria;
@@ -75,6 +74,9 @@ public class AppConfig {
     private int containerteQueueCapacity;
 
     @Inject
+    private List<ContainerOrchestrator> containerOrchestrators;
+
+    @Inject
     private List<FileSystemConfigurator> fileSystemConfigurators;
 
     @Inject
@@ -104,26 +106,12 @@ public class AppConfig {
     }
 
     @Bean
-    public Map<String, ContainerOrchestrator> containerOrchestrators() throws CloudbreakException {
+    public Map<String, ContainerOrchestrator> containerOrchestrators() {
         Map<String, ContainerOrchestrator> map = new HashMap<>();
-        for (String className : orchestrators) {
-            try {
-                Class<?> coClass = AppConfig.class.getClassLoader().loadClass(className);
-                if (ContainerOrchestrator.class.isAssignableFrom(coClass)) {
-                    ContainerOrchestrator co = (ContainerOrchestrator) coClass.newInstance();
-                    co.init(simpleParalellContainerRunnerExecutor(), stackDeletionBasedExitCriteria());
-                    map.put(co.name(), co);
-                }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                throw new CloudbreakException("Invalid ContainerOrchestrator definition: " + className, e);
-            }
+        for (ContainerOrchestrator containerOrchestrator : containerOrchestrators) {
+            containerOrchestrator.init(simpleParalellContainerRunnerExecutor(), stackDeletionBasedExitCriteria());
+            map.put(containerOrchestrator.name(), containerOrchestrator);
         }
-
-        if (map.isEmpty()) {
-            LOGGER.error("No any ContainerOrchestrator has been loaded. Following ContainerOrchestrators were tried {}", orchestrators);
-            throw new CloudbreakException("No any ContainerOrchestrator has been loaded");
-        }
-
         return map;
     }
 
