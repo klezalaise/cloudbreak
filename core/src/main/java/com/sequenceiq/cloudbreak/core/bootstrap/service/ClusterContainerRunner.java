@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableList;
@@ -33,6 +34,7 @@ import com.sequenceiq.cloudbreak.core.flow.context.DefaultFlowContext;
 import com.sequenceiq.cloudbreak.core.flow.context.ProvisioningContext;
 import com.sequenceiq.cloudbreak.domain.Cluster;
 import com.sequenceiq.cloudbreak.domain.Constraint;
+import com.sequenceiq.cloudbreak.domain.Container;
 import com.sequenceiq.cloudbreak.domain.HostGroup;
 import com.sequenceiq.cloudbreak.domain.InstanceGroup;
 import com.sequenceiq.cloudbreak.domain.InstanceMetaData;
@@ -49,8 +51,8 @@ import com.sequenceiq.cloudbreak.orchestrator.security.KerberosConfiguration;
 import com.sequenceiq.cloudbreak.repository.HostGroupRepository;
 import com.sequenceiq.cloudbreak.repository.InstanceMetaDataRepository;
 import com.sequenceiq.cloudbreak.repository.StackRepository;
-import com.sequenceiq.cloudbreak.service.TlsSecurityService;
 import com.sequenceiq.cloudbreak.service.cluster.ClusterService;
+import com.sequenceiq.cloudbreak.service.cluster.ContainerService;
 import com.sequenceiq.cloudbreak.service.stack.connector.VolumeUtils;
 
 @Component
@@ -80,11 +82,16 @@ public class ClusterContainerRunner {
     private ContainerOrchestratorResolver containerOrchestratorResolver;
 
     @Inject
-    private TlsSecurityService tlsSecurityService;
+    private ContainerService containerService;
+
+    @Inject
+    private ConversionService conversionService;
 
     public void runClusterContainers(ProvisioningContext context) throws CloudbreakException {
         try {
-            initializeClusterContainers(context, false, Collections.<String>emptySet());
+            Stack stack = stackRepository.findOneWithLists(context.getStackId());
+            List<ContainerInfo> containerInfo = initializeClusterContainers(stack, cloudPlatform(context), false, Collections.<String>emptySet());
+            containerService.save(convert(containerInfo, stack.getCluster()));
         } catch (CloudbreakOrchestratorCancelledException e) {
             throw new CancellationException(e.getMessage());
         } catch (CloudbreakOrchestratorException e) {
@@ -94,7 +101,8 @@ public class ClusterContainerRunner {
 
     public void addClusterContainers(ClusterScalingContext context) throws CloudbreakException {
         try {
-            initializeClusterContainers(context, true, context.getUpscaleCandidateAddresses());
+            Stack stack = stackRepository.findOneWithLists(context.getStackId());
+            initializeClusterContainers(stack, cloudPlatform(context), true, context.getUpscaleCandidateAddresses());
         } catch (CloudbreakOrchestratorCancelledException e) {
             throw new CancellationException(e.getMessage());
         } catch (CloudbreakOrchestratorException e) {
@@ -102,13 +110,16 @@ public class ClusterContainerRunner {
         }
     }
 
-    private void initializeClusterContainers(DefaultFlowContext context, Boolean add, Set<String> candidateAddresses) throws CloudbreakException,
-            CloudbreakOrchestratorException {
+    private String cloudPlatform(DefaultFlowContext context) {
         String cloudPlatform = NONE;
         if (context.getCloudPlatform() != null) {
             cloudPlatform = context.getCloudPlatform().value();
         }
-        Stack stack = stackRepository.findOneWithLists(context.getStackId());
+        return cloudPlatform;
+    }
+
+    private List<ContainerInfo> initializeClusterContainers(Stack stack, String cloudPlatform, Boolean add, Set<String> candidateAddresses)
+            throws CloudbreakException, CloudbreakOrchestratorException {
 
         Orchestrator orchestrator = stack.getOrchestrator();
         OrchestrationCredential credential = new OrchestrationCredential(orchestrator.getApiEndpoint(), orchestrator.getAttributes().getMap());
@@ -121,46 +132,50 @@ public class ClusterContainerRunner {
             gatewayHostname = gatewayInstance.getDiscoveryName();
         }
 
+        List<ContainerInfo> containers = new ArrayList<>();
         if (!add) {
             Cluster cluster = clusterService.retrieveClusterByStackId(stack.getId());
 
             if ("SWARM".equals(orchestrator.getType())) {
                 ContainerConstraint registratorConstraint = getRegistratorConstraint(gatewayHostname);
-                containerOrchestrator.runContainer(containerConfigService.get(stack, REGISTRATOR), credential, registratorConstraint,
-                        stackDeletionBasedExitCriteriaModel(stack.getId()));
+                containers.addAll(containerOrchestrator.runContainer(containerConfigService.get(stack, REGISTRATOR), credential, registratorConstraint,
+                        stackDeletionBasedExitCriteriaModel(stack.getId())));
             }
 
             ContainerConstraint ambariServerDbConstraint = getAmbariServerDbConstraint(gatewayHostname);
             ContainerInfo dbContainer = containerOrchestrator.runContainer(containerConfigService.get(stack, AMBARI_DB), credential, ambariServerDbConstraint,
                     stackDeletionBasedExitCriteriaModel(stack.getId())).get(0);
+            containers.add(dbContainer);
 
             ContainerConstraint ambariServerConstraint = getAmbariServerConstraint(dbContainer.getHost(), gatewayHostname, cloudPlatform);
-            containerOrchestrator.runContainer(containerConfigService.get(stack, AMBARI_SERVER), credential, ambariServerConstraint,
-                    stackDeletionBasedExitCriteriaModel(stack.getId()));
+            containers.addAll(containerOrchestrator.runContainer(containerConfigService.get(stack, AMBARI_SERVER), credential, ambariServerConstraint,
+                    stackDeletionBasedExitCriteriaModel(stack.getId())));
 
             if (cluster.isSecure()) {
                 ContainerConstraint havegedConstraint = getHavegedConstraint(gatewayHostname);
-                containerOrchestrator.runContainer(containerConfigService.get(stack, HAVEGED), credential, havegedConstraint,
-                        stackDeletionBasedExitCriteriaModel(stack.getId()));
+                containers.addAll(containerOrchestrator.runContainer(containerConfigService.get(stack, HAVEGED), credential, havegedConstraint,
+                        stackDeletionBasedExitCriteriaModel(stack.getId())));
 
                 ContainerConstraint kerberosServerConstraint = getKerberosServerConstraint(cluster, gatewayHostname);
-                containerOrchestrator.runContainer(containerConfigService.get(stack, KERBEROS), credential, kerberosServerConstraint,
-                        stackDeletionBasedExitCriteriaModel(stack.getId()));
+                containers.addAll(containerOrchestrator.runContainer(containerConfigService.get(stack, KERBEROS), credential, kerberosServerConstraint,
+                        stackDeletionBasedExitCriteriaModel(stack.getId())));
             }
         }
 
-        runAmbariAgentContainers(add, candidateAddresses, containerOrchestrator, cloudPlatform, stack, credential);
+        containers.addAll(runAmbariAgentContainers(add, candidateAddresses, containerOrchestrator, cloudPlatform, stack, credential));
 
         if ("SWARM".equals(orchestrator.getType())) {
             List<String> hosts = getHosts(add, stack, candidateAddresses);
             ContainerConstraint consulWatchConstraint = getConsulWatchConstraint(hosts);
-            containerOrchestrator.runContainer(containerConfigService.get(stack, CONSUL_WATCH), credential, consulWatchConstraint,
-                    stackDeletionBasedExitCriteriaModel(stack.getId()));
+            containers.addAll(containerOrchestrator.runContainer(containerConfigService.get(stack, CONSUL_WATCH), credential, consulWatchConstraint,
+                    stackDeletionBasedExitCriteriaModel(stack.getId())));
 
             ContainerConstraint logrotateConstraint = getLogrotateConstraint(hosts);
-            containerOrchestrator.runContainer(containerConfigService.get(stack, LOGROTATE), credential, logrotateConstraint,
-                    stackDeletionBasedExitCriteriaModel(stack.getId()));
+            containers.addAll(containerOrchestrator.runContainer(containerConfigService.get(stack, LOGROTATE), credential, logrotateConstraint,
+                    stackDeletionBasedExitCriteriaModel(stack.getId())));
         }
+
+        return containers;
     }
 
     private ContainerConstraint getRegistratorConstraint(String gatewayHostname) {
@@ -227,13 +242,15 @@ public class ClusterContainerRunner {
                 .build();
     }
 
-    private void runAmbariAgentContainers(Boolean add, Set<String> candidateAddresses, ContainerOrchestrator orchestrator, String cloudPlatform, Stack stack,
-            OrchestrationCredential cred) throws CloudbreakOrchestratorException {
+    private List<ContainerInfo> runAmbariAgentContainers(Boolean add, Set<String> candidateAddresses, ContainerOrchestrator orchestrator,
+            String cloudPlatform, Stack stack, OrchestrationCredential cred) throws CloudbreakOrchestratorException {
+        List<ContainerInfo> containers = new ArrayList<>();
         for (HostGroup hostGroup : hostGroupRepository.findHostGroupsInCluster(stack.getCluster().getId())) {
             ContainerConstraint ambariAgentConstraint = getAmbariAgentConstraint(cloudPlatform, hostGroup.getConstraint(), add, candidateAddresses);
-            orchestrator.runContainer(containerConfigService.get(stack, AMBARI_AGENT), cred, ambariAgentConstraint,
-                    stackDeletionBasedExitCriteriaModel(stack.getId()));
+            containers.addAll(orchestrator.runContainer(containerConfigService.get(stack, AMBARI_AGENT), cred, ambariAgentConstraint,
+                    stackDeletionBasedExitCriteriaModel(stack.getId())));
         }
+        return containers;
     }
 
     private Map<String, String> getDataVolumeBinds(long volumeCount) {
@@ -305,5 +322,15 @@ public class ClusterContainerRunner {
             }
         }
         return hosts;
+    }
+
+    private List<Container> convert(List<ContainerInfo> containerInfo, Cluster cluster) {
+        List<Container> containers = new ArrayList<>();
+        for (ContainerInfo source : containerInfo) {
+            Container container = conversionService.convert(source, Container.class);
+            container.setCluster(cluster);
+            containers.add(container);
+        }
+        return containers;
     }
 }
