@@ -12,6 +12,8 @@ import static com.sequenceiq.cloudbreak.orchestrator.containers.DockerContainer.
 import static com.sequenceiq.cloudbreak.orchestrator.security.KerberosConfiguration.DOMAIN_REALM;
 import static com.sequenceiq.cloudbreak.orchestrator.security.KerberosConfiguration.REALM;
 
+import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,11 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.inject.Inject;
-
-import org.springframework.core.convert.ConversionService;
-import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -54,6 +51,8 @@ import com.sequenceiq.cloudbreak.repository.StackRepository;
 import com.sequenceiq.cloudbreak.service.cluster.ClusterService;
 import com.sequenceiq.cloudbreak.service.cluster.ContainerService;
 import com.sequenceiq.cloudbreak.service.stack.connector.VolumeUtils;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ClusterContainerRunner {
@@ -182,6 +181,7 @@ public class ClusterContainerRunner {
         return new ContainerConstraint.Builder()
                 .withName(REGISTRATOR.getName())
                 .networkMode(HOST_NETWORK_MODE)
+                .instances(1)
                 .addVolumeBindings(ImmutableMap.of("/var/run/docker.sock", "/tmp/docker.sock"))
                 .addHosts(ImmutableList.of(gatewayHostname))
                 .cmd(new String[]{"consul://127.0.0.1:8500"})
@@ -189,37 +189,38 @@ public class ClusterContainerRunner {
     }
 
     private ContainerConstraint getAmbariServerDbConstraint(String gatewayHostname) {
-        ContainerConstraint constraint = new ContainerConstraint.Builder()
+        ContainerConstraint.Builder builder = new ContainerConstraint.Builder()
                 .withName(AMBARI_DB.getName())
+                .instances(1)
                 .networkMode(HOST_NETWORK_MODE)
                 .addVolumeBindings(ImmutableMap.of("/data/ambari-server/pgsql/data", "/var/lib/postgresql/data",
                         HOST_VOLUME_PATH + "/consul-watch", HOST_VOLUME_PATH + "/consul-watch"))
-                .addEnv(Arrays.asList(String.format("POSTGRES_PASSWORD=%s", "bigdata"), String.format("POSTGRES_USER=%s", "ambari")))
-                .build();
+                .addEnv(Arrays.asList(String.format("POSTGRES_PASSWORD=%s", "bigdata"), String.format("POSTGRES_USER=%s", "ambari")));
         if (gatewayHostname != null) {
-            constraint.setHosts(ImmutableList.of(gatewayHostname));
+            builder.addHosts(ImmutableList.of(gatewayHostname));
         }
-        return constraint;
+        return builder.build();
     }
 
     private ContainerConstraint getAmbariServerConstraint(String dbHostname, String gatewayHostname, String cloudPlatform) {
-        ContainerConstraint constraint = new ContainerConstraint.Builder()
+        ContainerConstraint.Builder builder = new ContainerConstraint.Builder()
                 .withName(AMBARI_SERVER.getName())
+                .instances(1)
                 .networkMode(HOST_NETWORK_MODE)
                 .tcpPortBinding(new TcpPortBinding(AMBARI_PORT, "0.0.0.0", AMBARI_PORT))
                 .addVolumeBindings(ImmutableMap.of(HOST_VOLUME_PATH, CONTAINER_VOLUME_PATH, "/etc/krb5.conf", "/etc/krb5.conf"))
                 .addEnv(Arrays.asList("SERVICE_NAME=ambari-8080"))
-                .cmd(new String[]{String.format("systemd.setenv=POSTGRES_DB=%s systemd.setenv=CLOUD_PLATFORM=%s", dbHostname, cloudPlatform)})
-                .build();
+                .cmd(new String[]{String.format("systemd.setenv=POSTGRES_DB=%s systemd.setenv=CLOUD_PLATFORM=%s", dbHostname, cloudPlatform)});
         if (gatewayHostname != null) {
-            constraint.setHosts(ImmutableList.of(gatewayHostname));
+            builder.addHosts(ImmutableList.of(gatewayHostname));
         }
-        return constraint;
+        return builder.build();
     }
 
     private ContainerConstraint getHavegedConstraint(String gatewayHostname) {
         return new ContainerConstraint.Builder()
                 .withName(HAVEGED.getName())
+                .instances(1)
                 .addHosts(ImmutableList.of(gatewayHostname))
                 .build();
     }
@@ -229,6 +230,7 @@ public class ClusterContainerRunner {
                 cluster.getKerberosPassword());
         return new ContainerConstraint.Builder()
                 .withName(KERBEROS.getName())
+                .instances(1)
                 .networkMode(HOST_NETWORK_MODE)
                 .addVolumeBindings(ImmutableMap.of(HOST_VOLUME_PATH, CONTAINER_VOLUME_PATH, "/etc/krb5.conf", "/etc/krb5.conf"))
                 .addHosts(ImmutableList.of(gatewayHostname))
@@ -243,7 +245,7 @@ public class ClusterContainerRunner {
     }
 
     private List<ContainerInfo> runAmbariAgentContainers(Boolean add, Set<String> candidateAddresses, ContainerOrchestrator orchestrator,
-            String cloudPlatform, Stack stack, OrchestrationCredential cred) throws CloudbreakOrchestratorException {
+                                                         String cloudPlatform, Stack stack, OrchestrationCredential cred) throws CloudbreakOrchestratorException {
         List<ContainerInfo> containers = new ArrayList<>();
         for (HostGroup hostGroup : hostGroupRepository.findHostGroupsInCluster(stack.getCluster().getId())) {
             ContainerConstraint ambariAgentConstraint = getAmbariAgentConstraint(cloudPlatform, hostGroup.getConstraint(), add, candidateAddresses);
@@ -263,25 +265,25 @@ public class ClusterContainerRunner {
     }
 
     private ContainerConstraint getAmbariAgentConstraint(String cloudPlatform, Constraint hgConstraint, Boolean add, Set<String> candidateAddresses) {
-        ContainerConstraint constraint = new ContainerConstraint.Builder()
+        ContainerConstraint.Builder builder = new ContainerConstraint.Builder()
                 .withName(AMBARI_AGENT.getName())
                 .networkMode(HOST_NETWORK_MODE)
-                .cmd(new String[]{String.format("systemd.setenv=CLOUD_PLATFORM=%s", cloudPlatform)})
-                .build();
+                .cmd(new String[]{String.format("systemd.setenv=CLOUD_PLATFORM=%s", cloudPlatform)});
         if (hgConstraint.getInstanceGroup() != null) {
             InstanceGroup instanceGroup = hgConstraint.getInstanceGroup();
             int volumeCount = instanceGroup.getTemplate().getVolumeCount();
             Map<String, String> dataVolumeBinds = getDataVolumeBinds(volumeCount);
             ImmutableMap<String, String> volumeBinds = ImmutableMap.of("/data/jars", "/data/jars", HOST_VOLUME_PATH, CONTAINER_VOLUME_PATH);
             dataVolumeBinds.putAll(volumeBinds);
-            constraint.setVolumeBinds(dataVolumeBinds);
-            constraint.setHosts(getHosts(add, candidateAddresses, instanceGroup));
+            builder.addVolumeBindings(dataVolumeBinds);
+            builder.addHosts(getHosts(add, candidateAddresses, instanceGroup));
         }
         if (hgConstraint.getConstraintTemplate() != null) {
-            constraint.setCpu(hgConstraint.getConstraintTemplate().getCpu());
-            constraint.setMem(hgConstraint.getConstraintTemplate().getMemory());
+            builder.cpus(hgConstraint.getConstraintTemplate().getCpu());
+            builder.memory(hgConstraint.getConstraintTemplate().getMemory());
+            builder.instances(hgConstraint.getHostCount());
         }
-        return constraint;
+        return builder.build();
     }
 
     private ContainerConstraint getConsulWatchConstraint(List<String> hosts) {

@@ -59,10 +59,6 @@ public class ContainerConstraint {
         return volumeBinds;
     }
 
-    public void setVolumeBinds(Map<String, String> volumeBinds) {
-        this.volumeBinds = volumeBinds;
-    }
-
     public List<String> getEnv() {
         return env;
     }
@@ -79,24 +75,12 @@ public class ContainerConstraint {
         return hosts;
     }
 
-    public void setHosts(List<String> hosts) {
-        this.hosts = hosts;
-    }
-
     public Double getCpu() {
         return cpu;
     }
 
-    public void setCpu(Double cpu) {
-        this.cpu = cpu;
-    }
-
     public Double getMem() {
         return mem;
-    }
-
-    public void setMem(Double mem) {
-        this.mem = mem;
     }
 
     public String getName() {
