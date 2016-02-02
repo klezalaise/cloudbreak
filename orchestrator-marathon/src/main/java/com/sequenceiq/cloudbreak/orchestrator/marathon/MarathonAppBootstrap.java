@@ -25,7 +25,9 @@ public class MarathonAppBootstrap implements ContainerBootstrap {
         Integer tasksRunning = appResponse.getTasksRunning();
 
         if (tasksRunning < desiredTasksCount) {
-            throw new CloudbreakOrchestratorFailedException("Marathon container '%s' instance count: '%s', desired instance count: '%s'!");
+            String msg = String.format("Marathon container '%s' instance count: '%s', desired instance count: '%s'!", app.getId(), tasksRunning,
+                    desiredTasksCount);
+            throw new CloudbreakOrchestratorFailedException(msg);
         }
 
         return true;

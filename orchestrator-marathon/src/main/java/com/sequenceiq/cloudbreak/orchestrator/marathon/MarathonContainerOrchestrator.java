@@ -2,6 +2,7 @@ package com.sequenceiq.cloudbreak.orchestrator.marathon;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -122,19 +123,22 @@ public class MarathonContainerOrchestrator extends SimpleContainerOrchestrator {
 
     private App createMarathonApp(ContainerConfig config, ContainerConstraint constraint, String image) {
         App app = new App();
-        app.setId(constraint.getName());
+        String name = constraint.getName().replace("_", "-") + "-" + new Date().getTime();
+        app.setId(name);
         app.setCpus(constraint.getCpu() != null ? constraint.getCpu() : MIN_CPU);
         app.setMem(constraint.getMem() != null ? constraint.getMem() : MIN_MEM);
         app.setInstances(constraint.getInstances() != null ? constraint.getInstances() : MIN_INSTANCES);
         app.setEnv(constraint.getEnv());
 
-        if (!constraint.getEnv().isEmpty()) {
+        String[] arrayOfCmd = constraint.getCmd();
+        if (arrayOfCmd != null && arrayOfCmd.length > 0) {
             StringBuilder sb = new StringBuilder();
             sb.append("/usr/sbin/init");
-            for (String cmd : constraint.getCmd()) {
+            for (String cmd : arrayOfCmd) {
                 sb.append(SPACE);
                 sb.append(cmd);
             }
+            app.setCmd(sb.toString());
         }
 
         for (Integer port : constraint.getPorts()) {
@@ -149,6 +153,7 @@ public class MarathonContainerOrchestrator extends SimpleContainerOrchestrator {
         Container container = new Container();
         container.setType(DOCKER_CONTAINER_TYPE);
         container.setDocker(docker);
+        app.setContainer(container);
         return app;
     }
 
