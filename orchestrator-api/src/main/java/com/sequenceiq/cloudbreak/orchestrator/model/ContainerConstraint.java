@@ -13,7 +13,7 @@ public class ContainerConstraint {
     private final Integer instances;
     private final List<Integer> ports;
     private final List<List<String>> constraints;
-    private final List<String> env;
+    private Map<String, String> env;
     private final String networkMode;
     private final TcpPortBinding tcpPortBinding;
     private final String name;
@@ -22,9 +22,10 @@ public class ContainerConstraint {
     private Map<String, String> volumeBinds;
     private Double cpu;
     private Double mem;
+    private Double disk;
 
 
-    public ContainerConstraint(ContainerConstraint.Builder builder) {
+    private ContainerConstraint(ContainerConstraint.Builder builder) {
         this.cmd = builder.cmd;
         this.cpu = builder.cpus;
         this.mem = builder.mem;
@@ -37,6 +38,7 @@ public class ContainerConstraint {
         this.tcpPortBinding = builder.tcpPortBinding;
         this.hosts = builder.hosts;
         this.name = builder.name;
+        this.disk = builder.disk;
     }
 
     public String[] getCmd() {
@@ -59,7 +61,7 @@ public class ContainerConstraint {
         return volumeBinds;
     }
 
-    public List<String> getEnv() {
+    public Map<String, String> getEnv() {
         return env;
     }
 
@@ -87,6 +89,10 @@ public class ContainerConstraint {
         return name;
     }
 
+    public Double getDisk() {
+        return disk;
+    }
+
     public static class Builder {
 
         private String[] cmd;
@@ -96,11 +102,12 @@ public class ContainerConstraint {
         private Integer instances;
         private List<List<String>> constraints = new ArrayList<>();
         private Map<String, String> volumeBinds = new HashMap<>();
-        private List<String> env = new ArrayList<>();
+        private Map<String, String> env = new HashMap<>();
         private String networkMode;
         private TcpPortBinding tcpPortBinding;
         private List<String> hosts = new ArrayList<>();
         private String name;
+        private Double disk;
 
         public Builder containerConstraint(ContainerConstraint containerConstraint) {
             this.cmd = containerConstraint.getCmd();
@@ -115,6 +122,7 @@ public class ContainerConstraint {
             this.tcpPortBinding = containerConstraint.getTcpPortBinding();
             this.hosts = containerConstraint.getHosts();
             this.name = containerConstraint.getName();
+            this.disk = containerConstraint.getDisk();
             return this;
         }
 
@@ -138,6 +146,11 @@ public class ContainerConstraint {
             return this;
         }
 
+        public Builder withDiskSize(Double diskSize) {
+            this.disk = diskSize;
+            return this;
+        }
+
         public Builder instances(Integer numberOfInstances) {
             this.instances = numberOfInstances;
             return this;
@@ -153,8 +166,8 @@ public class ContainerConstraint {
             return this;
         }
 
-        public Builder addEnv(List<String> env) {
-            this.env.addAll(env);
+        public Builder addEnv(Map<String, String> env) {
+            this.env.putAll(env);
             return this;
         }
 
