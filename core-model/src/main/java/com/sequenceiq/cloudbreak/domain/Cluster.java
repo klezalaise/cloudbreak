@@ -99,6 +99,7 @@ public class Cluster implements ProvisionEntity {
     private String statusReason;
 
     private String ambariIp;
+    private String certDir;
 
     private String userName;
     private String password;
@@ -320,6 +321,14 @@ public class Cluster implements ProvisionEntity {
 
     public void setAmbariIp(String ambariIp) {
         this.ambariIp = ambariIp;
+    }
+
+    public String getCertDir() {
+        return certDir;
+    }
+
+    public void setCertDir(String certDir) {
+        this.certDir = certDir;
     }
 
     public boolean isClusterReadyForStop() {
