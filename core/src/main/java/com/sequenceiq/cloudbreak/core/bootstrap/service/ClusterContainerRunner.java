@@ -12,14 +12,18 @@ import static com.sequenceiq.cloudbreak.orchestrator.containers.DockerContainer.
 import static com.sequenceiq.cloudbreak.orchestrator.security.KerberosConfiguration.DOMAIN_REALM;
 import static com.sequenceiq.cloudbreak.orchestrator.security.KerberosConfiguration.REALM;
 
-import javax.inject.Inject;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Inject;
+
+import org.springframework.core.convert.ConversionService;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -50,9 +54,6 @@ import com.sequenceiq.cloudbreak.repository.StackRepository;
 import com.sequenceiq.cloudbreak.service.cluster.ClusterService;
 import com.sequenceiq.cloudbreak.service.cluster.ContainerService;
 import com.sequenceiq.cloudbreak.service.stack.connector.VolumeUtils;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 public class ClusterContainerRunner {
@@ -134,7 +135,7 @@ public class ClusterContainerRunner {
         String gatewayHostname = "";
         if (stack.getInstanceGroups() != null && !stack.getInstanceGroups().isEmpty()) {
             InstanceMetaData gatewayInstance = stack.getGatewayInstanceGroup().getInstanceMetaData().iterator().next();
-            gatewayHostname = gatewayInstance.getDiscoveryName();
+            gatewayHostname = gatewayInstance.getDiscoveryFQDN();
         }
 
         Map<String, List<ContainerInfo>> containers = new HashMap<>();
@@ -328,7 +329,7 @@ public class ClusterContainerRunner {
         List<String> hosts = new ArrayList<>();
         for (InstanceMetaData instanceMetaData : stack.getRunningInstanceMetaData()) {
             if (!add || candidateAddresses.contains(instanceMetaData.getPrivateIp())) {
-                hosts.add(instanceMetaData.getDiscoveryName());
+                hosts.add(instanceMetaData.getDiscoveryFQDN());
             }
         }
         return hosts;
@@ -339,7 +340,7 @@ public class ClusterContainerRunner {
         for (InstanceMetaData instanceMetaData : instanceMetaDataRepository.findAliveInstancesInInstanceGroup(instanceGroup.getId())) {
             String privateIp = instanceMetaData.getPrivateIp();
             if (!add || candidateAddresses.contains(privateIp)) {
-                hosts.add(instanceMetaData.getDiscoveryName());
+                hosts.add(instanceMetaData.getDiscoveryFQDN());
             }
         }
         return hosts;
