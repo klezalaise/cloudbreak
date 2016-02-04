@@ -3,15 +3,13 @@ package com.sequenceiq.cloudbreak.service.cluster.flow;
 import static com.sequenceiq.cloudbreak.util.JsonUtil.readValue;
 import static com.sequenceiq.cloudbreak.util.JsonUtil.writeValueAsString;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.springframework.stereotype.Component;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Map;
 
 import com.sequenceiq.cloudbreak.api.model.FileSystemConfiguration;
 import com.sequenceiq.cloudbreak.api.model.FileSystemType;
@@ -25,6 +23,7 @@ import com.sequenceiq.cloudbreak.repository.HostGroupRepository;
 import com.sequenceiq.cloudbreak.repository.HostMetadataRepository;
 import com.sequenceiq.cloudbreak.service.cluster.flow.filesystem.FileSystemConfigurator;
 import com.sequenceiq.cloudbreak.service.stack.flow.TerminationFailedException;
+import org.springframework.stereotype.Component;
 
 @Component
 @Transactional
@@ -52,6 +51,7 @@ public class ClusterTerminationService {
         String terminatedName = cluster.getName() + DELIMITER + new Date().getTime();
         cluster.setName(terminatedName);
         cluster.setBlueprint(null);
+        cluster.setStack(null);
         clusterRepository.save(cluster);
         for (HostGroup hostGroup : hostGroupRepository.findHostGroupsInCluster(cluster.getId())) {
             hostGroup.getRecipes().clear();
