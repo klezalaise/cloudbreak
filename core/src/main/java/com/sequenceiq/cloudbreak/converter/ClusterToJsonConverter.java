@@ -88,17 +88,22 @@ public class ClusterToJsonConverter extends AbstractConversionServiceAwareConver
         List<Port> ports = NetworkUtils.getPorts(Optional.<Stack>absent());
         try {
             JsonNode hostGroupsNode = blueprintValidator.getHostGroupNode(blueprint);
+            Map<String, HostGroup> hostGroupMap = blueprintValidator.createHostGroupMap(hostGroups);
             for (JsonNode hostGroupNode : hostGroupsNode) {
                 String hostGroupName = blueprintValidator.getHostGroupName(hostGroupNode);
-                Map<String, HostGroup> hostGroupMap = blueprintValidator.createHostGroupMap(hostGroups);
                 JsonNode componentsNode = blueprintValidator.getComponentsNode(hostGroupNode);
                 HostGroup actualHostgroup = hostGroupMap.get(hostGroupName);
-                //TODO
-                InstanceMetaData next = actualHostgroup.getConstraint().getInstanceGroup().getInstanceMetaData().iterator().next();
+                String serviceAddress;
+                if (actualHostgroup.getConstraint().getInstanceGroup() != null) {
+                    InstanceMetaData next = actualHostgroup.getConstraint().getInstanceGroup().getInstanceMetaData().iterator().next();
+                    serviceAddress = next.getPublicIp();
+                } else {
+                    serviceAddress = actualHostgroup.getHostMetadata().iterator().next().getHostName();
+                }
                 for (JsonNode componentNode : componentsNode) {
                     String componentName = componentNode.get("name").asText();
                     StackServiceComponentDescriptor componentDescriptor = stackServiceComponentDescs.get(componentName);
-                    collectServicePorts(result, ports, next, componentDescriptor);
+                    collectServicePorts(result, ports, serviceAddress, componentDescriptor);
                 }
             }
         } catch (Exception ex) {
@@ -107,12 +112,12 @@ public class ClusterToJsonConverter extends AbstractConversionServiceAwareConver
         return result;
     }
 
-    private void collectServicePorts(Map<String, String> result, List<Port> ports, InstanceMetaData next, StackServiceComponentDescriptor componentDescriptor) {
+    private void collectServicePorts(Map<String, String> result, List<Port> ports, String address, StackServiceComponentDescriptor componentDescriptor) {
         if (componentDescriptor != null && componentDescriptor.isMaster()) {
             for (Port port : ports) {
                 if (port.getExposedService().getServiceName().equals(componentDescriptor.getName())) {
                     result.put(port.getExposedService().getPortName(),
-                            String.format("%s:%s%s", next.getPublicIp(), port.getPort(), port.getExposedService().getPostFix()));
+                            String.format("%s:%s%s", address, port.getPort(), port.getExposedService().getPostFix()));
                 }
             }
         }
