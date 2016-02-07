@@ -5,6 +5,7 @@ import static com.github.dockerjava.api.model.RestartPolicy.alwaysRestart;
 import static java.lang.String.format;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import com.sequenceiq.cloudbreak.orchestrator.swarm.containers.SwarmContainerDeletion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -137,6 +139,7 @@ public class SwarmContainerOrchestrator extends SimpleContainerOrchestrator {
             }
             return containerInfos;
         } catch (Exception ex) {
+            deleteContainer(containerInfos, cred);
             throw new CloudbreakOrchestratorFailedException(ex);
         }
     }
@@ -152,8 +155,28 @@ public class SwarmContainerOrchestrator extends SimpleContainerOrchestrator {
     }
 
     @Override
-    public void deleteContainer(List<String> ids, OrchestrationCredential cred) throws CloudbreakOrchestratorException {
+    public void deleteContainer(List<ContainerInfo> containerInfo, OrchestrationCredential cred) throws CloudbreakOrchestratorException {
+        try {
+            DockerClient dockerApiClient = swarmClient(cred);
+            List<Future<Boolean>> futures = new ArrayList<>();
+            for (ContainerInfo info : containerInfo) {
+                try {
+                    String hostName = info.getHost().split("\\.")[0];
+                    SwarmContainerDeletion containerRemover = new SwarmContainerDeletion(dockerApiClient, hostName, info.getName());
+                    Callable<Boolean> runner = runner(containerRemover, getExitCriteria(), null, MDC.getCopyOfContextMap());
+                    futures.add(getParallelContainerRunner().submit(runner));
+                } catch (Exception me) {
+                    throw new CloudbreakOrchestratorFailedException(me);
+                }
+            }
 
+            for (Future<Boolean> future : futures) {
+                future.get();
+            }
+        } catch (Exception ex) {
+            String msg = String.format("Failed to delete Marathon app with app ids: '%s'.", Arrays.toString(containerInfo.toArray(new String[containerInfo.size()])));
+            throw new CloudbreakOrchestratorFailedException(msg, ex);
+        }
     }
 
     @Override
