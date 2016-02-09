@@ -17,6 +17,7 @@ public class ContainerConstraint {
     private final String networkMode;
     private final TcpPortBinding tcpPortBinding;
     private final String name;
+    private final String appName;
 
     private List<String> hosts;
     private Map<String, String> volumeBinds;
@@ -38,6 +39,7 @@ public class ContainerConstraint {
         this.tcpPortBinding = builder.tcpPortBinding;
         this.hosts = builder.hosts;
         this.name = builder.name;
+        this.appName = builder.appName;
         this.disk = builder.disk;
     }
 
@@ -89,6 +91,10 @@ public class ContainerConstraint {
         return name;
     }
 
+    public String getAppName() {
+        return appName;
+    }
+
     public Double getDisk() {
         return disk;
     }
@@ -107,6 +113,7 @@ public class ContainerConstraint {
         private TcpPortBinding tcpPortBinding;
         private List<String> hosts = new ArrayList<>();
         private String name;
+        private String appName;
         private Double disk;
 
         public Builder containerConstraint(ContainerConstraint containerConstraint) {
@@ -122,6 +129,7 @@ public class ContainerConstraint {
             this.tcpPortBinding = containerConstraint.getTcpPortBinding();
             this.hosts = containerConstraint.getHosts();
             this.name = containerConstraint.getName();
+            this.appName = containerConstraint.getAppName();
             this.disk = containerConstraint.getDisk();
             return this;
         }
@@ -188,6 +196,11 @@ public class ContainerConstraint {
 
         public Builder withName(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Builder withAppName(String appName) {
+            this.appName = appName;
             return this;
         }
 
