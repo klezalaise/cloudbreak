@@ -41,13 +41,6 @@
     },
     </#if>
 
-    "InternetGatewayId" : {
-      "Description" : "Id of the internet gateway used by the VPC",
-      "Type" : "String",
-      "MinLength": "12",
-      "MaxLength": "12",
-      "AllowedPattern" : "igw-[a-z0-9]{8}"
-    },
     </#if>
 
     <#if availabilitySetNeeded>
@@ -169,13 +162,7 @@
       }
     },
 
-    "AttachGateway" : {
-       "Type" : "AWS::EC2::VPCGatewayAttachment",
-       "Properties" : {
-         "VpcId" : { "Ref" : "VPC" },
-         "InternetGatewayId" : { "Ref" : "InternetGateway" }
-       }
-    },
+    ,
     </#if>
 
 	<#if !existingSubnet>
@@ -193,24 +180,7 @@
         ]
       }
     },
-
-    "PublicRoute" : {
-      "Type" : "AWS::EC2::Route",
-      <#if existingVPC>
-      "DependsOn" : "PublicRouteTable",
-      <#else>
-      "DependsOn" : [ "PublicRouteTable", "AttachGateway" ],
-      </#if>
-      "Properties" : {
-        "RouteTableId" : { "Ref" : "PublicRouteTable" },
-        "DestinationCidrBlock" : "0.0.0.0/0",
-        <#if existingVPC>
-        "GatewayId" : { "Ref" : "InternetGatewayId" }
-        <#else>
-        "GatewayId" : { "Ref" : "InternetGateway" }
-        </#if>
-      }
-    },
+    ,
 
     "PublicSubnetRouteTableAssociation" : {
       "Type" : "AWS::EC2::SubnetRouteTableAssociation",

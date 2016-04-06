@@ -7,14 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInternetGatewaysRequest;
-import com.amazonaws.services.ec2.model.DescribeInternetGatewaysResult;
-import com.amazonaws.services.ec2.model.InternetGateway;
-import com.amazonaws.services.ec2.model.InternetGatewayAttachment;
 import com.sequenceiq.cloudbreak.cloud.Setup;
-import com.sequenceiq.cloudbreak.cloud.aws.view.AwsCredentialView;
 import com.sequenceiq.cloudbreak.cloud.context.AuthenticatedContext;
 import com.sequenceiq.cloudbreak.cloud.exception.CloudConnectorException;
 import com.sequenceiq.cloudbreak.cloud.model.CloudStack;
@@ -62,7 +55,7 @@ public class AwsSetup implements Setup {
                 }
             }
         }
-        if (isExistingVPC(network)) {
+        /*if (isExistingVPC(network)) {
             try {
                 AmazonEC2Client amazonEC2Client = awsClient.createAccess(new AwsCredentialView(ac.getCloudCredential()),
                         ac.getCloudContext().getLocation().getRegion().value());
@@ -82,7 +75,7 @@ public class AwsSetup implements Setup {
             } catch (AmazonClientException e) {
                 throw new CloudConnectorException(String.format(IGW_DOES_NOT_EXIST_MSG, network.getStringParameter("internetGatewayId")));
             }
-        }
+        }*/
 
         LOGGER.debug("setup has been executed");
     }

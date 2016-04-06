@@ -217,7 +217,7 @@ public class AwsResourceConnector implements ResourceConnector {
         }
         if (existingVPC) {
             parameters.add(new Parameter().withParameterKey("VPCId").withParameterValue(stack.getNetwork().getStringParameter(VPC)));
-            parameters.add(new Parameter().withParameterKey("InternetGatewayId").withParameterValue(stack.getNetwork().getStringParameter(IGW)));
+            //parameters.add(new Parameter().withParameterKey("InternetGatewayId").withParameterValue(stack.getNetwork().getStringParameter(IGW)));
             if (existingSubnet) {
                 parameters.add(new Parameter().withParameterKey("SubnetId").withParameterValue(stack.getNetwork().getStringParameter(SUBNET)));
             } else {
