@@ -30,7 +30,7 @@ angular.module('uluwatuControllers').controller('credentialController', [
         $scope.alertMessage = "";
         var firstVisiblePlatform = $scope.firstVisible(["AWS", "AZURE_RM", "BYOS", "GCP", "OPENSTACK"]);
         if (firstVisiblePlatform != -1) {
-            $scope[["awsCredential", "azureRmCredential", "mesosCredential", "gcpCredential", "openstackCredential"][firstVisiblePlatform]] = true;
+            $scope[["awsCredential", "azureRmCredential", "mesosCredential", "gcpCredential", "openstackCredential","wapCredential"][firstVisiblePlatform]] = true;
         }
 
         $scope.createAzureRmCredentialRequest = function() {
@@ -39,6 +39,7 @@ angular.module('uluwatuControllers').controller('credentialController', [
             $scope.openstackCredential = false;
             $scope.azureRmCredential = true;
             $scope.mesosCredential = false;
+	    $scope.wapCredential = false;
         }
 
         $scope.createAwsCredentialRequest = function() {
@@ -47,6 +48,7 @@ angular.module('uluwatuControllers').controller('credentialController', [
             $scope.openstackCredential = false;
             $scope.azureRmCredential = false;
             $scope.mesosCredential = false;
+	    $scope.wapCredential = false;
         }
 
         $scope.createGcpCredentialRequest = function() {
@@ -55,6 +57,7 @@ angular.module('uluwatuControllers').controller('credentialController', [
             $scope.openstackCredential = false;
             $scope.azureRmCredential = false;
             $scope.mesosCredential = false;
+	    $scope.wapCredential = false;
         }
 
         $scope.createOpenstackCredentialRequest = function() {
@@ -63,7 +66,17 @@ angular.module('uluwatuControllers').controller('credentialController', [
             $scope.openstackCredential = true;
             $scope.azureRmCredential = false;
             $scope.mesosCredential = false;
+	    $scope.wapCredential = false;
         }
+
+	$scope.createWapCredentialRequest = function() {
+            $scope.awsCredential = false;
+            $scope.gcpCredential = false;
+            $scope.openstackCredential = false;
+            $scope.azureRmCredential = false;
+            $scope.mesosCredential = false;
+	    $scope.wapCredential = true;
+ 	}
 
         $scope.importMesosStackRequest = function() {
             $scope.awsCredential = false;
@@ -71,7 +84,10 @@ angular.module('uluwatuControllers').controller('credentialController', [
             $scope.openstackCredential = false;
             $scope.azureRmCredential = false;
             $scope.mesosCredential = true;
+	    $scope.wapCredential = false;
         }
+
+	       
 
         $scope.refreshCertificateFile = function(credentialId) {
             GlobalCredentialCertificate.update({
