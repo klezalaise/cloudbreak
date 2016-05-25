@@ -49,7 +49,7 @@ angular.module('uluwatuControllers').controller('topologyController', ['$scope',
             $scope.azureTopology = false;
             $scope.gcpTopology = false;
             $scope.awsTopology = true;
-	    $scopte.wapTopology = false;
+	    $scope.wapTopology = false;
         }
 
         $scope.createGcpTopologyRequest = function() {
@@ -68,7 +68,7 @@ angular.module('uluwatuControllers').controller('topologyController', ['$scope',
  	    $scope.wapTopology = false;
         }
 
-	$scope.createAzureTopologyRequest = function() {
+	$scope.createWapTopologyRequest = function() {
             $scope.openstackTopology = false;
             $scope.azureTopology = false;
             $scope.gcpTopology = false;

@@ -70,7 +70,7 @@ angular.module('uluwatuControllers').controller('templateController', [
 	    $scope.wapTemplate = false;
         }
 	
-	$scope.createMesosTemplateRequest = function() {
+	$scope.createWapTemplateRequest = function() {
             $scope.azureTemplate = false;
             $scope.awsTemplate = false;
             $scope.gcpTemplate = false;
