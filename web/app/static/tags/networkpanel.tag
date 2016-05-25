@@ -53,6 +53,9 @@
                             <form class="form-horizontal" role="form" ng-show="openstackNetwork && isVisible('OPENSTACK')" name="openstackNetworkForm" ng-show="openstackNetwork">
                                 <div ng-include src="'tags/network/openstacknetworkform.tag'"></div>
                             </form>
+			    <form class="form-horizontal" role="form" ng-show="wapNetwork && isVisible('WAP')" name="wapNetworkForm" ng-show="wapNetwork">
+			    	<div ng-include src="'tags/network/wapnetworkform.tag'"></div>
+			    </form>
                         </div>
                     </div>
                 </div>

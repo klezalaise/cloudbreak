@@ -57,8 +57,13 @@
                             <form class="form-horizontal" role="form" name="openstackCredentialForm" ng-show="openstackCredential && !credentialInCreation && isVisible('OPENSTACK')">
                                 <div ng-include src="'tags/credential/openstackform.tag'"></div>
                             </form>
+
                             <form class="form-horizontal" role="form" name="mesosImportStackForm" ng-show="mesosCredential && !credentialInCreation && isVisible('BYOS')">
                                 <div ng-include src="'tags/credential/mesosform.tag'"></div>
+			    </form>
+		   	    <form class="form-horizontal" role="form" name="wapCredentialForm" ng-show="wapCredential && !credentialInCreation && isVisible('WAP')">
+                                <div ng-include src="'tags/credential/wapform.tag'"></div>
+
                             </form>
                         </div>
                     </div>

@@ -293,6 +293,10 @@ angular.module('uluwatuControllers').controller('credentialController', [
             }
         }
 
+	    $scope.createWapCredential = function(){
+		console.log("CreateWapCredentialSuccess")	
+	    };
+
 
         $scope.deleteCredential = function(credential) {
             GlobalCredential.delete({

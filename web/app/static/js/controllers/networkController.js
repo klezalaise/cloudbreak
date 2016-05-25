@@ -81,6 +81,9 @@ angular.module('uluwatuControllers').controller('networkController', ['$scope', 
             $scope.network.cloudPlatform = "AZURE_RM";
             doCreateNetwork();
         }
+	$scope.createWapNetwork = function() {
+            console.log("Network Successfully Create")
+        }
 
 
         function doCreateNetwork() {
