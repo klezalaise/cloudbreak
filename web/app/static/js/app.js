@@ -287,6 +287,11 @@ cloudbreakApp.run(function($rootScope, $http) {
                 angular.forEach($rootScope.params.platformVariants, function(value, key) {
                     platforms.push(key)
                 })
+		console.log($rootScope.params.platformVariants)
+		//test to Add WAP to platform
+		console.log(platforms)
+		platforms.push('WAP')
+	    	// TO BE REMOVE
                 $rootScope.params.platforms = platforms
             }
         }

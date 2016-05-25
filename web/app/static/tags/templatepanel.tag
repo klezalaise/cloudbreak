@@ -32,6 +32,8 @@
                                     <div class="btn-group btn-group-justified" ng-if="isVisible('GCP') || isVisible('OPENSTACK')">
                                         <a id="gcpTemplateChange" ng-if="isVisible('GCP')" ng-class="{'btn':true, 'btn-info':gcpTemplate, 'btn-default':!gcpTemplate}" role="button" ng-click="createGcpTemplateRequest()">{{msg.gcp_label}}</a>
                                         <a id="openstackTemplateChange" ng-if="isVisible('OPENSTACK')" ng-class="{'btn':true, 'btn-info':openstackTemplate, 'btn-default':!openstackTemplate}" role="button" ng-click="createOpenstackTemplateRequest()">{{msg.openstack_label}}</a>
+					<a id="WAPTemplateChange" ng-if="isVisible('WAP') "ng-class="{'btn':true, 'btn-info':wapTemplate, 'btn-default':!wapTemplate}" role="button" ng-click="createWapTemplateRequest()">{{msg.wap_label}}</a>
+
                                     </div>
                                 </div>
                             </div>

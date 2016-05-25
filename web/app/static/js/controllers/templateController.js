@@ -20,9 +20,9 @@ angular.module('uluwatuControllers').controller('templateController', [
         initializeMesosTemp();
         $scope.showAlert = false;
         $scope.alertMessage = "";
-        var firstVisiblePlatform = $scope.firstVisible(["AWS", "AZURE_RM", "BYOS", "GCP", "OPENSTACK"]);
+        var firstVisiblePlatform = $scope.firstVisible(["AWS", "AZURE_RM", "BYOS", "GCP", "OPENSTACK","WAP"]);
         if (firstVisiblePlatform != -1) {
-            $scope[["awsTemplate", "azureTemplate", "mesosTemplate", "gcpTemplate", "openstackTemplate"][firstVisiblePlatform]] = true;
+            $scope[["awsTemplate", "azureTemplate", "mesosTemplate", "gcpTemplate", "openstackTemplate","wapTemplate"][firstVisiblePlatform]] = true;
         }
 
         $scope.createAwsTemplateRequest = function() {
@@ -31,6 +31,7 @@ angular.module('uluwatuControllers').controller('templateController', [
             $scope.gcpTemplate = false;
             $scope.openstackTemplate = false;
             $scope.mesosTemplate = false;
+	    $scope.wapTemplate = false;
         }
 
         $scope.createAzureTemplateRequest = function() {
@@ -39,6 +40,7 @@ angular.module('uluwatuControllers').controller('templateController', [
             $scope.gcpTemplate = false;
             $scope.openstackTemplate = false;
             $scope.mesosTemplate = false;
+	    $scope.wapTemplate = false;
         }
 
         $scope.createGcpTemplateRequest = function() {
@@ -47,6 +49,7 @@ angular.module('uluwatuControllers').controller('templateController', [
             $scope.gcpTemplate = true;
             $scope.openstackTemplate = false;
             $scope.mesosTemplate = false;
+	    $scope.wapTemplate = false;
         }
 
         $scope.createOpenstackTemplateRequest = function() {
@@ -55,7 +58,8 @@ angular.module('uluwatuControllers').controller('templateController', [
             $scope.gcpTemplate = false;
             $scope.openstackTemplate = true;
             $scope.mesosTemplate = false;
-        }
+            $scope.wapTemplate = false;
+	}
 
         $scope.createMesosTemplateRequest = function() {
             $scope.azureTemplate = false;
@@ -63,6 +67,16 @@ angular.module('uluwatuControllers').controller('templateController', [
             $scope.gcpTemplate = false;
             $scope.openstackTemplate = false;
             $scope.mesosTemplate = true;
+	    $scope.wapTemplate = false;
+        }
+	
+	$scope.createMesosTemplateRequest = function() {
+            $scope.azureTemplate = false;
+            $scope.awsTemplate = false;
+            $scope.gcpTemplate = false;
+            $scope.openstackTemplate = false;
+            $scope.mesosTemplate = false;
+	    $scope.wapTemplate = true;
         }
 
 

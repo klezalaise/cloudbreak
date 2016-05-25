@@ -16,9 +16,9 @@ angular.module('uluwatuControllers').controller('topologyController', ['$scope',
         $scope.tmpMapping = {}
         $scope.modify = false
         $scope.modifyTopology = {}
-        var firstVisiblePlatform = $scope.firstVisible(["AWS", "AZURE_RM", "GCP", "OPENSTACK"]);
+        var firstVisiblePlatform = $scope.firstVisible(["AWS", "AZURE_RM", "GCP", "OPENSTACK","WAP"]);
         if (firstVisiblePlatform != -1) {
-            $scope[["awsTopology", "azureTopology", "gcpTopology", "openstackTopology"][firstVisiblePlatform]] = true;
+            $scope[["awsTopology", "azureTopology", "gcpTopology", "openstackTopology","wapTopology"][firstVisiblePlatform]] = true;
         }
 
         function createTopologyRequest(type) {
@@ -41,6 +41,7 @@ angular.module('uluwatuControllers').controller('topologyController', ['$scope',
             $scope.azureTopology = false;
             $scope.gcpTopology = false;
             $scope.awsTopology = false;
+	    $scope.wapTopology = false;
         }
 
         $scope.createAwsTopologyRequest = function() {
@@ -48,6 +49,7 @@ angular.module('uluwatuControllers').controller('topologyController', ['$scope',
             $scope.azureTopology = false;
             $scope.gcpTopology = false;
             $scope.awsTopology = true;
+	    $scopte.wapTopology = false;
         }
 
         $scope.createGcpTopologyRequest = function() {
@@ -55,6 +57,7 @@ angular.module('uluwatuControllers').controller('topologyController', ['$scope',
             $scope.azureTopology = false;
             $scope.gcpTopology = true;
             $scope.awsTopology = false;
+	    $scope.wapTopology = false;
         }
 
         $scope.createAzureTopologyRequest = function() {
@@ -62,8 +65,16 @@ angular.module('uluwatuControllers').controller('topologyController', ['$scope',
             $scope.azureTopology = true;
             $scope.gcpTopology = false;
             $scope.awsTopology = false;
+ 	    $scope.wapTopology = false;
         }
 
+	$scope.createAzureTopologyRequest = function() {
+            $scope.openstackTopology = false;
+            $scope.azureTopology = false;
+            $scope.gcpTopology = false;
+            $scope.awsTopology = false;
+ 	    $scope.wapTopology = true;
+        }
         $scope.createTopology = function(type) {
             if (!$scope.modify) {
                 $scope.topologyTemp.cloudPlatform = type;

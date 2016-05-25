@@ -11,9 +11,9 @@ angular.module('uluwatuControllers').controller('networkController', ['$scope', 
         };
         $scope.showAlert = false;
         $scope.alertMessage = "";
-        var firstVisiblePlatform = $scope.firstVisible(["AWS", "AZURE_RM", "GCP", "OPENSTACK"]);
+        var firstVisiblePlatform = $scope.firstVisible(["AWS", "AZURE_RM", "OPENSTACK","WAP"]);
         if (firstVisiblePlatform != -1) {
-            $scope[["awsNetwork", "azureNetwork", "gcpNetwork", "openstackNetwork"][firstVisiblePlatform]] = true;
+            $scope[["awsNetwork", "azureNetwork", "gcpNetwork", "openstackNetwork","wapNetwork"][firstVisiblePlatform]] = true;
         }
 
         $scope.createAwsNetworkRequest = function() {
@@ -22,6 +22,8 @@ angular.module('uluwatuControllers').controller('networkController', ['$scope', 
             $scope.awsNetwork = true;
             $scope.gcpNetwork = false;
             $scope.openstackNetwork = false;
+	    $scope.wapNetwork = false;
+
         }
 
         $scope.createAzureNetworkRequest = function() {
@@ -30,6 +32,7 @@ angular.module('uluwatuControllers').controller('networkController', ['$scope', 
             $scope.awsNetwork = false;
             $scope.gcpNetwork = false;
             $scope.openstackNetwork = false;
+	    $scope.wapNetwork = false;    
         }
 
         $scope.createGcpNetworkRequest = function() {
@@ -38,6 +41,7 @@ angular.module('uluwatuControllers').controller('networkController', ['$scope', 
             $scope.awsNetwork = false;
             $scope.gcpNetwork = true;
             $scope.openstackNetwork = false;
+	    $scope.wapNetwork = false;
         }
 
         $scope.createOpenstackNetworkRequest = function() {
@@ -46,6 +50,16 @@ angular.module('uluwatuControllers').controller('networkController', ['$scope', 
             $scope.awsNetwork = false;
             $scope.gcpNetwork = false;
             $scope.openstackNetwork = true;
+	    $scope.wapNetwork = false;
+        }
+
+        $scope.createWapNetworkRequest = function() {
+            initializeFormsAndScopeNetwork()
+            $scope.azureNetwork = false;
+            $scope.awsNetwork = false;
+            $scope.gcpNetwork = false;
+            $scope.openstackNetwork = false;
+	    $scope.wapNetwork = true;
         }
 
         $scope.createAwsNetwork = function() {
@@ -67,6 +81,7 @@ angular.module('uluwatuControllers').controller('networkController', ['$scope', 
             $scope.network.cloudPlatform = "AZURE_RM";
             doCreateNetwork();
         }
+
 
         function doCreateNetwork() {
             var save = $scope.network.publicInAccount ? AccountNetwork.save : UserNetwork.save;
@@ -117,7 +132,8 @@ angular.module('uluwatuControllers').controller('networkController', ['$scope', 
             return (topology.cloudPlatform === 'AWS' && $scope.awsNetwork) ||
                 (topology.cloudPlatform === 'GCP' && $scope.gcpNetwork) ||
                 (topology.cloudPlatform === 'AZURE_RM' && $scope.azureNetwork) ||
-                (topology.cloudPlatform === 'OPENSTACK' && $scope.openstackNetwork)
+                (topology.cloudPlatform === 'OPENSTACK' && $scope.openstackNetwork)||
+		(topology.cloudPlatform === 'WAP' && $scope.wapNetwork)
         }
 
         $scope.getTopologyNameById = function(topologyId) {

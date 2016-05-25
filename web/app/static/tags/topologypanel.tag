@@ -32,6 +32,8 @@
                                     <div class="btn-group btn-group-justified" ng-if="isVisible('GCP') || isVisible('OPENSTACK')">
                                         <a id="gcpTopologyChange" ng-if="isVisible('GCP')" class="btn btn-default" ng-class="{'btn':true, 'btn-info':gcpTopology, 'btn-default':!gcpTopology}" role="button" ng-click="createGcpTopologyRequest()">{{msg.gcp_label}}</a>
                                         <a id="openstackTopologyChange" ng-if="isVisible('OPENSTACK')" ng-class="{'btn':true, 'btn-info':openstackTopology, 'btn-default':!openstackTopology}" role="button" ng-click="createOpenstackTopologyRequest()">{{msg.openstack_label}}</a>
+					<a id="WAPTopologyChange" ng-if="isVisible('WAP') "ng-class="{'btn':true, 'btn-info':wapTopology, 'btn-default':!wapTopology}" role="button" ng-click="createWapTopologyRequest()">{{msg.wap_label}}</a>
+
                                     </div>
 
                                 </div>
