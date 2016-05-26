@@ -12,12 +12,14 @@ angular.module('uluwatuControllers').controller('templateController', [
         $scope.gcpTemplateForm = {};
         $scope.openstackTemplateForm = {};
         $scope.mesosTemplateForm = {};
+	$scope.wapTemplateForm = {};
         $scope.awsInstanceType = {};
         initializeAzureTemp();
         initializeAwsTemp();
         initializeGcpTemp();
         initializeOpenstackTemp();
         initializeMesosTemp();
+	initializeWapTemp();
         $scope.showAlert = false;
         $scope.alertMessage = "";
         var firstVisiblePlatform = $scope.firstVisible(["AWS", "AZURE_RM", "BYOS", "GCP", "OPENSTACK","WAP"]);
@@ -197,7 +199,34 @@ angular.module('uluwatuControllers').controller('templateController', [
                 $scope.unShowErrorMessageAlert();
             }
         }
+	$scope.createWapTemplate = function() {
+            $scope.wapTemp.cloudPlatform = "WAP";
+            if ($scope.azureTemp.public) {
+                //AccountTemplate.save($scope.azureTemp, function(result) {
+                    handleWapTemplateSuccess(null)//Should be result
+                //}, function(error) {
+                    //$scope.showError(error, $rootScope.msg.wap_template_failed);
+                    //$scope.showErrorMessageAlert();
+                //});
+            } else {
+                //UserTemplate.save($scope.azureTemp, function(result) {
+                    handleWapTemplateSuccess(null)//Should be null
+                //}, function(error) {
+                    //$scope.showError(error, $rootScope.msg.wap_template_failed);
+                    //$scope.showErrorMessageAlert();
+               //});
+            }
 
+            function handleWapTemplateSuccess(result) {
+                //$scope.azureTemp.id = result.id;
+                $rootScope.templates.push($scope.wapTemp);
+                //initializeAzureTemp();
+                //$scope.showSuccess($filter("format")($rootScope.msg.azure_template_success, String(result.id)));
+                $scope.azureTemplateForm.$setPristine();
+                collapseCreateTemplateFormPanel();
+                $scope.unShowErrorMessageAlert();
+            }
+        }
         $scope.createMesosTemplate = function() {
             if ($scope.mesosTemp.public) {
                 AccountConstraint.save($scope.mesosTemp, function(result) {
@@ -340,6 +369,18 @@ angular.module('uluwatuControllers').controller('templateController', [
                 parameters: {}
             }
         }
+	
+	//To Be completed
+	function initializeWapTemp() {
+            $scope.wapTemp = {
+                volumeCount: 1,
+                volumeSize: 100,
+                //instanceType: $rootScope.params.defaultVmTypes.GCP,
+                //volumeType: $rootScope.params.defaultDisks.GCP,
+                parameters: {}
+            }
+        }
+
 
         $scope.filterByCloudPlatform = function(topology) {
             return (topology.cloudPlatform === 'AWS' && $scope.awsTemplate) ||

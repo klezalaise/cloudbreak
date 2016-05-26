@@ -57,6 +57,10 @@
                             <form class="form-horizontal" role="form" name="mesosTemplateForm" ng-show="mesosTemplate && isVisible('BYOS')">
                                 <div ng-include src="'tags/template/mesosform.tag'"></div>
                             </form>
+			     <form class="form-horizontal" role="form" ng-show="wapTemplate && isVisible('WAP')" name="wapTemplateForm" ng-show="wapTemplate">
+                                <div ng-include src="'tags/template/wapform.tag'"></div>
+                            </form>
+
                         </div>
                     </div>
                 </div>

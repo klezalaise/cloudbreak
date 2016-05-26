@@ -109,7 +109,9 @@
                             <div class="panel-body" ng-if="credential.cloudPlatform == 'OPENSTACK' ">
                                 <div ng-include src="'tags/credential/openstacklist.tag'"></div>
                             </div>
-
+                            <div class="panel-body" ng-if="credential.cloudPlatform == 'WAP' ">
+				    <div ng-include src="'tags/credential/waplist.tag'"></div>
+			    </div> 
                         </div>
                     </div>
                     <!-- .panel -->
