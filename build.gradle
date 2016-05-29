@@ -232,13 +232,13 @@ subprojects {
   }
 
   checkstyleMain {
-    ignoreFailures = false
+    ignoreFailures = true
     configFile = rootProject.file('config/checkstyle/checkstyle.xml')
     configProperties = ['config_loc': "$rootDir/config/checkstyle"]
   }
 
   checkstyleTest {
-    ignoreFailures = false
+    ignoreFailures = true
     configFile = rootProject.file('config/checkstyle/checkstyle.xml')
     configProperties = ['config_loc': "$rootDir/config/checkstyle"]
   }

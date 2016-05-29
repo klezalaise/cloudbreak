@@ -1,6 +1,5 @@
 package com.sequenceiq.cloudbreak.cloud.wap;
 
-
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
@@ -18,67 +17,63 @@ import com.sequenceiq.cloudbreak.cloud.model.Variant;
 
 @Service
 public class WapConnector implements CloudConnector {
+		
+		@Inject
+		private WapPlatformParameters platformParameters;
 	
-	
-	@Inject
-    private WapAuthenticator authenticator;
-    @Inject
-    private WapProvisionSetup provisionSetup;
-    @Inject
-    private WapInstanceConnector instanceConnector;
-    @Inject
-    private WapResourceConnector resourceConnector;
-    @Inject
-    private WapCredentialConnector wapCredentialConnector;
-    @Inject
-    private WapPlatformParameters wapPlatformParameters;
-    @Inject
-    private WapMetadataCollector metadataCollector;
-
-	
-	 @Override
+	    @Override
 	    public Authenticator authentication() {
-	        return null;
+		    throw new UnsupportedOperationException("Authentication operation is not supported on WAP stacks.");
 	    }
 
 	    @Override
 	    public Setup setup() {
-	        return null;
+		    throw new UnsupportedOperationException("Setup operation is not supported on WAP stacks.");
+
 	    }
 
 	    @Override
 	    public CredentialConnector credentials() {
-	        return null;
+	    throw new UnsupportedOperationException("Credential operation is not supported on WAP stacks.");
+
+
 	    }
 
 	    @Override
 	    public ResourceConnector resources() {
-	        return null;
+	    throw new UnsupportedOperationException("Resource operation is not supported on WAP stacks.");
+
 	    }
 
 	    @Override
 	    public InstanceConnector instances() {
-	        return null;
+	    	throw new UnsupportedOperationException("Instance operation is not supported on WAP stacks.");
 	    }
 
 	    @Override
 	    public MetadataCollector metadata() {
-	        return null;
+	    	throw new UnsupportedOperationException("Metadata operation is not supported on WAP stacks.");
 	    }
 
 	    @Override
 	    public PlatformParameters parameters() {
-	        return null;
+	    	return platformParameters;
+		    //throw new UnsupportedOperationException("Platform operation is not supported on WAP stacks.");
+
 	    }
 
 	    @Override
 	    public Platform platform() {
-	        return null;
+	    	return WapConstants.WAP_PLATFORM;
+		    //throw new UnsupportedOperationException("Authentication operation is not supported on WAP stacks.");
+
 	    }
 
 	    @Override
 	    public Variant variant() {
-	        return null;
+	    	return WapConstants.WAP_VARIANT;
+		    //throw new UnsupportedOperationException("Authentication operation is not supported on WAP stacks.");
+
 	    }
 
 }

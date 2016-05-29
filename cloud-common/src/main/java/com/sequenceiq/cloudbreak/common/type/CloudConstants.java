@@ -6,7 +6,8 @@ public class CloudConstants {
     public static final String AZURE_RM = "AZURE_RM";
     public static final String OPENSTACK = "OPENSTACK";
     public static final String BYOS = "BYOS";
-
+    public static final String WAP = "WAP";
+    
     private CloudConstants() {
     }
 }

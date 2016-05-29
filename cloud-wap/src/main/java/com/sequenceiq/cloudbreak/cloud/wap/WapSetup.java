@@ -1,8 +1,6 @@
 package com.sequenceiq.cloudbreak.cloud.wap;
 
 import com.sequenceiq.cloudbreak.cloud.Setup;
-
-
 import com.sequenceiq.cloudbreak.cloud.context.AuthenticatedContext;
 import com.sequenceiq.cloudbreak.cloud.model.CloudStack;
 import com.sequenceiq.cloudbreak.cloud.model.FileSystem;
@@ -10,9 +8,7 @@ import com.sequenceiq.cloudbreak.cloud.model.Image;
 import com.sequenceiq.cloudbreak.cloud.notification.PersistenceNotifier;
 import com.sequenceiq.cloudbreak.common.type.ImageStatusResult;
 
-public class WapProvisionSetup implements Setup{
-	 
-	
+public class WapSetup implements Setup{
 	@Override
     public void prepareImage(AuthenticatedContext authenticatedContext, CloudStack stack, Image image){
     	

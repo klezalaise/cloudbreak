@@ -49,10 +49,20 @@
 </div>
 -->
 <div class="form-group">
+    <label class="col-sm-3 control-label" for="wap_tvmType">{{msg.template_form_instance_type_label}}</label>
+    <div class="col-sm-9">
+        <select class="form-control" id="wap_tvmType" ng-options="vmType.value as vmType.value for vmType in $root.params.vmTypes.WAP" ng-model="wapTemp.instanceType" required>
+        </select>
+    </div>
+</div> 
+<div class="form-group">
     <label class="col-sm-3 control-label" for="wap_publicInAccount">{{msg.public_in_account_label}}</label>
     <div class="col-sm-9">
         <input type="checkbox" name="wap_publicInAccount" id="wap_publicInAccount" ng-model="wapTemp.public">
     </div>
+
+   <!-- .col-sm-9 -->
+</div>
 
     <!-- .col-sm-9 -->
 <!--
