@@ -201,27 +201,30 @@ angular.module('uluwatuControllers').controller('templateController', [
         }
 	$scope.createWapTemplate = function() {
             $scope.wapTemp.cloudPlatform = "WAP";
-            if ($scope.azureTemp.public) {
-                //AccountTemplate.save($scope.azureTemp, function(result) {
-                    handleWapTemplateSuccess(null)//Should be result
-                //}, function(error) {
-                    //$scope.showError(error, $rootScope.msg.wap_template_failed);
-                    //$scope.showErrorMessageAlert();
-                //});
+	    $scope.wapTemp.volumeCount=1
+	    $scope.wapTemp.volumeSize=10;
+            if ($scope.wapTemp.public) {
+		console.log($scope.wapTemp);
+                AccountTemplate.save($scope.wapTemp, function(result) {
+                    handleWapTemplateSuccess(result)//Should be result
+               }, function(error) {
+                    $scope.showError(error, $rootScope.msg.wap_template_failed);
+                    $scope.showErrorMessageAlert();
+                });
             } else {
-                //UserTemplate.save($scope.azureTemp, function(result) {
-                    handleWapTemplateSuccess(null)//Should be null
-                //}, function(error) {
-                    //$scope.showError(error, $rootScope.msg.wap_template_failed);
-                    //$scope.showErrorMessageAlert();
-               //});
+                UserTemplate.save($scope.wapTemp, function(result) {
+                    handleWapTemplateSuccess(result)//Should be null
+                }, function(error) {
+                    $scope.showError(error, $rootScope.msg.wap_template_failed);
+                    $scope.showErrorMessageAlert();
+               });
             }
 
             function handleWapTemplateSuccess(result) {
-                //$scope.azureTemp.id = result.id;
+                $scope.azureTemp.id = result.id;
                 $rootScope.templates.push($scope.wapTemp);
-                //initializeAzureTemp();
-                //$scope.showSuccess($filter("format")($rootScope.msg.azure_template_success, String(result.id)));
+                initializeWapTemp();
+                $scope.showSuccess($filter("format")($rootScope.msg.azure_template_success, String(result.id)));
                 $scope.azureTemplateForm.$setPristine();
                 collapseCreateTemplateFormPanel();
                 $scope.unShowErrorMessageAlert();
@@ -373,10 +376,7 @@ angular.module('uluwatuControllers').controller('templateController', [
 	//To Be completed
 	function initializeWapTemp() {
             $scope.wapTemp = {
-                volumeCount: 1,
-                volumeSize: 100,
-                //instanceType: $rootScope.params.defaultVmTypes.GCP,
-                //volumeType: $rootScope.params.defaultDisks.GCP,
+                instanceType: $rootScope.params.defaultVmTypes.WAP,
                 parameters: {}
             }
         }

@@ -44,7 +44,7 @@
     <label class="col-sm-3 control-label" for="certificate">{{msg.credential_wap_form_certificate_label}}</label>
 
     <div class="col-sm-9">
-        <input type="text" class="form-control" id="credentialWap.parameters.tenantId" name="certificate" ng-model="credentialWap.parameters.certificate" required placeholder="{{msg.credential_wap_form_certificate_placeholder}}">
+	    <textarea rows="4" type="text" class="form-control" id="credentialWap.parameters.certificate" name="certificate" ng-model="credentialWap.parameters.certificate" placeholder="{{msg.credential_wap_form_certificate_placeholder}}"></textarea>
         <div class="help-block" ng-show="wapCredentialForm.certificate.$dirty && wapCredentialForm.certificate.$invalid">
             <i class="fa fa-warning"></i> {{msg.credential_certificate_invalid}}
         </div>
@@ -55,7 +55,16 @@
 
 
 <!-- .form-group -->
+<div class="form-group" ng-class="{ 'has-error': wapCredentialForm.wap_sshPublicKey.$dirty && wapCredentialForm.gcp_sshPublicKey.$invalid }">
+    <label class="col-sm-3 control-label" for="wap_sshPublicKey">{{msg.credential_wap_form_ssh_key_label}}</label>
 
+    <div class="col-sm-9">
+        <textarea rows="4" placeholder="{{msg.credential_wap_form_ssh_key_placeholder}}" type="text" class="form-control" ng-model="credentialWap.publicKey" name="wap_sshPublicKey" id="wap_sshPublicKey" required></textarea>
+        <div class="help-block" ng-show="wapCredentialForm.wap_sshPublicKey.$dirty && wapCredentialForm.wap_sshPublicKey.$invalid">
+            <i class="fa fa-warning"></i> {{msg.credential_ssh_key_invalid}}
+        </div>
+    </div>
+</div>
 
 
 <div class="form-group">

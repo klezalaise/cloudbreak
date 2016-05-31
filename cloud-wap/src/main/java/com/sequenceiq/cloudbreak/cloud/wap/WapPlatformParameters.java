@@ -3,6 +3,7 @@ package com.sequenceiq.cloudbreak.cloud.wap;
 import com.sequenceiq.cloudbreak.cloud.PlatformParameters;
 import static com.sequenceiq.cloudbreak.cloud.model.VmType.vmType;
 import static com.sequenceiq.cloudbreak.cloud.model.Region.region;
+import com.sequenceiq.cloudbreak.util.FileReaderUtils;
 
 
 import org.springframework.stereotype.Service;
@@ -82,7 +83,7 @@ public class WapPlatformParameters implements PlatformParameters{
 
 	@Override
     public String resourceDefinition(String resource){
-        return "";
+        return FileReaderUtils.readFileFromClasspathQuietly("definitions/wap-" + resource + ".json");
 	}
 
 

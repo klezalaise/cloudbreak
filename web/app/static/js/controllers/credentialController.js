@@ -266,40 +266,42 @@ angular.module('uluwatuControllers').controller('credentialController', [
 		console.log("CreateWapCredentialSuccess")
 		$scope.credentialWap.cloudPlatform='WAP';	
 		$scope.credentialInCreation = true;
+		console.log($scope.credentialWap);
 		if($scope.credentialWap.public){
 			console.log("public ip check");
-			//AccountCredential.save($scope.credentialWap,function(result){
-				//$scope.credentialWap.id=result.id;
+			AccountCredential.save($scope.credentialWap,function(result){
+				console.log("INAcounntCredential");
+				$scope.credentialWap.id=result.id;
 				$rootScope.credentials.push($scope.credentialWap);
 				$scope.credentialWap={};
-				//$scope.showSuccess($filter("format")($rootScope.msg.wap_credential_success, result.id));
+				$scope.showSuccess($filter("format")($rootScope.msg.wap_credential_success, result.id));
 				$scope.credentialInCreation = false;
 				$scope.wapCredentialForm.$setPristine();
 				collapseCreateCredentialFormPanel();
 				$scope.unShowErrorMessageAlert();	
 				
-			//},function(error){
-			//	$scope.showError(error,$rootScope.msg.wap_credential_failed);
-			//	$scope.credentialInCreation = false;
-			//	$scope.showErrorMessageAlert();
-			//});
+			},function(error){
+				$scope.showError(error,$rootScope.msg.wap_credential_failed);
+				$scope.credentialInCreation = false;
+				$scope.showErrorMessageAlert();
+			});
 		}else{
 			console.log("public ip no check")
-			//UserCredential.save($scope.credentialWap,function(result){
-				//$scope.credentialWap.id=result.id;
+			UserCredential.save($scope.credentialWap,function(result){
+				$scope.credentialWap.id=result.id;
 				$rootScope.credentials.push($scope.credentialWap);
 				$scope.credentialWap={};
-				//$scope.showSuccess($filter("format")($rootScope.msg.wap_credential_success, result.id));
+				$scope.showSuccess($filter("format")($rootScope.msg.wap_credential_success, result.id));
 				$scope.credentialInCreation = false;
 				$scope.wapCredentialForm.$setPristine();
 				collapseCreateCredentialFormPanel();
 				$scope.unShowErrorMessageAlert();	
 				
-			//},function(error){
-			//	$scope.showError(error,$rootScope.msg.wap_credential_failed);
-			//	$scope.credentialInCreation = false;
-			//	$scope.showErrorMessageAlert();
-			//});
+			},function(error){
+				$scope.showError(error,$rootScope.msg.wap_credential_failed);
+				$scope.credentialInCreation = false;
+				$scope.showErrorMessageAlert();
+			});
 
 		}
 	}

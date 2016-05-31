@@ -20,10 +20,14 @@ public class WapConnector implements CloudConnector {
 		
 		@Inject
 		private WapPlatformParameters platformParameters;
-	
+		@Inject 
+		private WapCredentialConnector wapCredentialConnector;
+		@Inject
+		private WapAuthenticator wapAuthenticator;
+		
 	    @Override
 	    public Authenticator authentication() {
-		    throw new UnsupportedOperationException("Authentication operation is not supported on WAP stacks.");
+		    return wapAuthenticator; 
 	    }
 
 	    @Override
@@ -34,9 +38,7 @@ public class WapConnector implements CloudConnector {
 
 	    @Override
 	    public CredentialConnector credentials() {
-	    throw new UnsupportedOperationException("Credential operation is not supported on WAP stacks.");
-
-
+		    return wapCredentialConnector;
 	    }
 
 	    @Override
