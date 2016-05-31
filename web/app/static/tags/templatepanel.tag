@@ -104,6 +104,9 @@
                             <div class="panel-body" ng-if="template.cloudPlatform == 'OPENSTACK' ">
                                 <div ng-include src="'tags/template/openstacklist.tag'"></div>
                             </div>
+			    <div class="panel-body" ng-if="template.cloudPlatform == 'WAP' ">
+                                <div ng-include src="'tags/template/waplist.tag'"></div>
+                            </div>
 
                         </div>
                     </div>
