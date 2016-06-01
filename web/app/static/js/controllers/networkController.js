@@ -82,7 +82,8 @@ angular.module('uluwatuControllers').controller('networkController', ['$scope', 
             doCreateNetwork();
         }
 	$scope.createWapNetwork = function() {
-            console.log("Network Successfully Create")
+            $scope.network.cloudPlatform = "WAP";
+	    doCreateNetwork();
         }
 
 

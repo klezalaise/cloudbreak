@@ -99,6 +99,10 @@
                             <div class="panel-body" ng-if="network.cloudPlatform == 'OPENSTACK'">
                                 <div ng-include src="'tags/network/openstacknetworklist.tag'"></div>
                             </div>
+                            <div class="panel-body" ng-if="network.cloudPlatform == 'WAP'">
+                                <div ng-include src="'tags/network/wapnetworklist.tag'"></div>
+                            </div>
+
 
                         </div>
                     </div>

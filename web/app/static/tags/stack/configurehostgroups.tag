@@ -115,7 +115,7 @@
                     {{activeStack === undefined ? msg.cluster_form_ambari_failure_tag : msg.cluster_form_ambari_hdprepo_tag}} <i class="fa fa-angle-double-right"></i>
                 </button>
             </div>
-            <div class="btn-group" role="group" ng-if="activeCredential.cloudPlatform != 'AZURE_RM' && activeCredential.cloudPlatform != 'GCP'" ng-hide="clusterCreationForm.$invalid || showAdvancedOptionForm">
+            <div class="btn-group" role="group" ng-if="activeCredential.cloudPlatform != 'AZURE_RM' && activeCredential.cloudPlatform != 'GCP' && activeCredential.cloudPlatform != 'WAP'" ng-hide="clusterCreationForm.$invalid || showAdvancedOptionForm">
                 <button type="button" class="btn btn-sm btn-default" ng-click="showWizardActualElement('configureReview')" ng-disabled="!cluster.name || !cluster.blueprintId || (activeCredential !== undefined && (!cluster.region || !cluster.securityGroupId || !cluster.networkId))">
                     {{msg.cluster_form_ambari_launch_tag}} <i class="fa fa-angle-double-right"></i>
                 </button>

@@ -67,6 +67,21 @@
 </div>
 
 
+<div class="form-group" ng-class="{ 'has-error': wapCredentialForm.url.$dirty && wapCredentialForm.url.$invalid }">
+    <label class="col-sm-3 control-label" for="url">{{msg.credential_wap_form_url_label}}</label>
+
+    <div class="col-sm-9">
+        <input type="text" class="form-control" id="credentialWap.parameters.url" name="url" ng-model="credentialWap.parameters.url" required placeholder="{{msg.credential_wap_form_url_placeholder}}">
+        <div class="help-block" ng-show="wapCredentialForm.url.$dirty && wapCredentialForm.url.$invalid">
+            <i class="fa fa-warning"></i> {{msg.credential_wap_url_invalid}}
+        </div>
+    </div>
+    <!-- .col-sm-9 -->
+
+</div>
+
+
+
 <div class="form-group">
     <label class="col-sm-3 control-label" for="credPublic">{{msg.public_in_account_label}}</label>
     <div class="col-sm-9">
