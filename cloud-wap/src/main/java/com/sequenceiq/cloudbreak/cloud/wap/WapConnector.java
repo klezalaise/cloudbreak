@@ -24,6 +24,13 @@ public class WapConnector implements CloudConnector {
 		private WapCredentialConnector wapCredentialConnector;
 		@Inject
 		private WapAuthenticator wapAuthenticator;
+		@Inject
+		private WapResourceConnector resourceConnector;
+		@Inject
+		private WapSetup wapSetup;
+		@Inject
+		private WapMetadataCollector wapMetadataConnector;
+		
 		
 	    @Override
 	    public Authenticator authentication() {
@@ -32,7 +39,7 @@ public class WapConnector implements CloudConnector {
 
 	    @Override
 	    public Setup setup() {
-		    throw new UnsupportedOperationException("Setup operation is not supported on WAP stacks.");
+		    return wapSetup;
 
 	    }
 
@@ -43,8 +50,8 @@ public class WapConnector implements CloudConnector {
 
 	    @Override
 	    public ResourceConnector resources() {
-	    throw new UnsupportedOperationException("Resource operation is not supported on WAP stacks.");
-
+	    	
+	    	return resourceConnector;
 	    }
 
 	    @Override
@@ -54,7 +61,7 @@ public class WapConnector implements CloudConnector {
 
 	    @Override
 	    public MetadataCollector metadata() {
-	    	throw new UnsupportedOperationException("Metadata operation is not supported on WAP stacks.");
+	    	return wapMetadataConnector;
 	    }
 
 	    @Override
