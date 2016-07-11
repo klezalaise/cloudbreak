@@ -31,7 +31,7 @@
     <label class="col-sm-3 control-label" for="csubscriptionId">{{msg.credential_wap_form_subscription_id_label}}</label>
 
     <div class="col-sm-9">
-        <input type="text" class="form-control" id="credentialAzureRm.parameters.subscriptionId" name="csubscriptionId" ng-model="credentialWap.parameters.subscriptionId" required placeholder="{{msg.credential_wap_form_subscription_id_placeholder}}">
+        <input type="text" class="form-control" id="credentialWap.parameters.subscriptionId" name="csubscriptionId" ng-model="credentialWap.parameters.subscriptionId" required placeholder="{{msg.credential_wap_form_subscription_id_placeholder}}">
         <div class="help-block" ng-show="wapCredentialForm.csubscriptionId.$dirty && wapCredentialForm.csubscriptionId.$invalid">
             <i class="fa fa-warning"></i> {{msg.credential_subscription_invalid}}
         </div>
@@ -44,12 +44,20 @@
     <label class="col-sm-3 control-label" for="certificate">{{msg.credential_wap_form_certificate_label}}</label>
 
     <div class="col-sm-9">
-	    <textarea rows="4" type="text" class="form-control" id="credentialWap.parameters.certificate" name="certificate" ng-model="credentialWap.parameters.certificate" placeholder="{{msg.credential_wap_form_certificate_placeholder}}"></textarea>
-        <div class="help-block" ng-show="wapCredentialForm.certificate.$dirty && wapCredentialForm.certificate.$invalid">
-            <i class="fa fa-warning"></i> {{msg.credential_certificate_invalid}}
-        </div>
+	    <input type="file" data-file="wap.certificate"/>
     </div>
     <!-- .col-sm-9 -->
+
+</div>
+</div>
+<div class="form-group" ng-class="{'has-error':wapCredentialForm.certificatePassword.$dirty && wapCredentialForm.password.$invalid }">
+	<label class="col-sm-3 control-label" for ="password">{{msg.credential_wap_form_password_label}}</label>
+	<div class="col-sm-9">
+		<input type="password" class="form-control" id="credentialWap.parameters.password" name="cpassword" ng-model="credentialWap.parameters.password" required placeholder="{{msg.credential_wap_form_password_placeholder}}">
+		<div class="help-block" ng-show="wapCredentialForm.cpassword.$dirty && wapCredentialForm.cpassword.$invalid">
+			<i class="fa fa-warning"></i> {{msg.credential_password_invalid}}
+		</div>
+	</div>
 
 </div>
 

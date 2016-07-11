@@ -27,6 +27,8 @@ angular.module('uluwatuControllers').controller('credentialController', [
         $scope.openstackCredentialForm = {};
         $scope.gcp = {};
         $scope.gcp.p12 = "";
+	$scope.wap= {};
+	$scope.wap.cert = "";
         $scope.showAlert = false;
         $scope.alertMessage = "";
         var firstVisiblePlatform = $scope.firstVisible(["AWS", "AZURE_RM", "BYOS", "GCP", "OPENSTACK"]);
@@ -266,47 +268,63 @@ angular.module('uluwatuControllers').controller('credentialController', [
 		console.log("CreateWapCredentialSuccess")
 		$scope.credentialWap.cloudPlatform='WAP';	
 		$scope.credentialInCreation = true;
-		console.log($scope.credentialWap);
-		if($scope.credentialWap.public){
-			console.log("public ip check");
-			AccountCredential.save($scope.credentialWap,function(result){
-				console.log("INAcounntCredential");
-				$scope.credentialWap.id=result.id;
-				$rootScope.credentials.push($scope.credentialWap);
-				$scope.credentialWap={};
-				$scope.showSuccess($filter("format")($rootScope.msg.wap_credential_success, result.id));
-				$scope.credentialInCreation = false;
-				$scope.wapCredentialForm.$setPristine();
-				collapseCreateCredentialFormPanel();
-				$scope.unShowErrorMessageAlert();	
+		var cert = $scope.wap.certificate;
+		var reader = new FileReader();
+		console.log(cert);
+		reader.onloadend = function(evt){
+			if(evt.target.readyState == FileReader.DONE){
+				$scope.credentialWap.parameters.certificate = evt.target.result;	
+			
+		
+				if($scope.credentialWap.public){
+				console.log("public ip check");
+				AccountCredential.save($scope.credentialWap,function(result){
+					console.log("INAcounntCredential");
+					$scope.credentialWap.id=result.id;
+					$rootScope.credentials.push($scope.credentialWap);
+					$scope.credentialWap={};
+					$scope.showSuccess($filter("format")($rootScope.msg.wap_credential_success, result.id));
+					$scope.credentialInCreation = false;
+					$scope.wapCredentialForm.$setPristine();
+					collapseCreateCredentialFormPanel();
+					$scope.unShowErrorMessageAlert();	
 				
-			},function(error){
-				$scope.showError(error,$rootScope.msg.wap_credential_failed);
-				$scope.credentialInCreation = false;
-				$scope.showErrorMessageAlert();
-			});
-		}else{
-			console.log("public ip no check")
-			UserCredential.save($scope.credentialWap,function(result){
-				$scope.credentialWap.id=result.id;
-				$rootScope.credentials.push($scope.credentialWap);
-				$scope.credentialWap={};
-				$scope.showSuccess($filter("format")($rootScope.msg.wap_credential_success, result.id));
-				$scope.credentialInCreation = false;
-				$scope.wapCredentialForm.$setPristine();
-				collapseCreateCredentialFormPanel();
-				$scope.unShowErrorMessageAlert();	
+				},function(error){
+					$scope.showError(error,$rootScope.msg.wap_credential_failed);
+					$scope.credentialInCreation = false;
+					$scope.showErrorMessageAlert();
+				});
+			}else{
+				console.log("public ip no check")
+				UserCredential.save($scope.credentialWap,function(result){
+					$scope.credentialWap.id=result.id;
+					$rootScope.credentials.push($scope.credentialWap);
+					$scope.credentialWap={};
+					$scope.showSuccess($filter("format")($rootScope.msg.wap_credential_success, result.id));
+					$scope.credentialInCreation = false;
+					$scope.wapCredentialForm.$setPristine();
+					collapseCreateCredentialFormPanel();
+					$scope.unShowErrorMessageAlert();	
 				
-			},function(error){
-				$scope.showError(error,$rootScope.msg.wap_credential_failed);
-				$scope.credentialInCreation = false;
-				$scope.showErrorMessageAlert();
-			});
+				},function(error){
+					$scope.showError(error,$rootScope.msg.wap_credential_failed);
+					$scope.credentialInCreation = false;
+					$scope.showErrorMessageAlert();
+				});
+
+			}
+			
+		}
 
 		}
+		var blob = cert.slice(0,cert.size);
+		reader.readAsBinaryString(blob);
+
+		console.log($scope.credentialWap);
+
 	}
 	
-
+	
         $scope.importMesosStack = function() {
             $scope.credentialInCreation = true;
             $scope.mesosStack.orchestrator.type = "MARATHON";
