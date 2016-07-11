@@ -12,9 +12,10 @@ jar {
 }
 
 dependencies {
-   	compile project(':cloud-template')
+    compile project(':cloud-template')
     compile project(':cloud-common')
     compile project(':cloud-reactor')
+    compile ("com.sequenceiq:azure-rest-client:${azureRestClientVersion}")
 
     compile group: 'org.slf4j',                     name: 'slf4j-api',                      version: slf4jApiVersion
     compile group: 'org.apache.commons',            name: 'commons-lang3',                  version: apacheCommonsLangVersion
