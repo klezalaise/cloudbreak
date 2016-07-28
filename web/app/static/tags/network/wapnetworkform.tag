@@ -44,7 +44,25 @@
                         </div>
                         <!-- .col-sm-9 -->
                     </div>
- 
+		    <label class="col-sm-3 control-label" for="wap_network_id">{{msg.network_wap_network_id}}</label>
+		    <div class="col-sm-9">
+                            <input type="text" class="form-control" name="wap_network_id" ng-model="network.parameters.network_id" id="wap_network_id" placeholder="{{msg.network_wap_form_network_id_placeholder}}" required>
+                            <div class="help-block" ng-show="wapNetworkForm_2.wap_network_id.$dirty && wapNetworkForm_2.wap_network_id.$invalid">
+                                <i class="fa fa-warning"></i> {{msg.wap_public_ip}}
+                            </div>
+                        </div>
+                        <!-- .col-sm-9 -->
+                    </div>
+		    <label class="col-sm-3 control-label" for="wap_public_ip">{{msg.network_wap_public_ip}}</label>
+		    <div class="col-sm-9">
+                            <input type="text" class="form-control" name="wap_public_ip" ng-model="network.parameters.public_ip" id="wap_public_ip" placeholder="{{msg.network_wap_form_public_ip_placeholder}}" required>
+                            <div class="help-block" ng-show="wapNetworkForm_2.wap_public_ip.$dirty && wapNetworkForm_2.wap_public_ip.$invalid">
+                                <i class="fa fa-warning"></i> {{msg.wap_public_ip}}
+                            </div>
+                        </div>
+                        <!-- .col-sm-9 -->
+                    </div>
+
                     <div class="form-group">
                         <label class="col-sm-3 control-label" for="wap_network_public">{{msg.public_in_account_label}}</label>
                         <div class="col-sm-9">
