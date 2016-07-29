@@ -30,11 +30,12 @@
 
 </div>
     <div class="form-group">
-        <label class="col-sm-3 control-label" for="gcplprojectId">{{msg.credential_wap_form_certificate_label}}</label>
+        <label class="col-sm-3 control-label" for="gcplprojectId">{{msg.credential_wap_form_url_label}}</label>
+	<div class="col-sm-9">
+		<p id="gcpclsubscriptionId" class="form-control-static">{{credential.parameters.url}}</p>
+	</div>
 
-        <div class="col-sm-9">
-            <p id="gcplprojectId" class="form-control-static">{{credential.parameters.certificate}}</p>
-        </div>
+
 
         <!-- .col-sm-9 -->
     </div>
