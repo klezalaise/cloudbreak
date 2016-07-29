@@ -29,8 +29,10 @@ public class WapConnector implements CloudConnector {
 		@Inject
 		private WapSetup wapSetup;
 		@Inject
-		private WapMetadataCollector wapMetadataConnector;
+		private WapMetadataCollector wapMetadataCollector;
 		
+		@Inject
+		private WapInstanceConnector wapInstanceConnector;
 		
 	    @Override
 	    public Authenticator authentication() {
@@ -56,12 +58,12 @@ public class WapConnector implements CloudConnector {
 
 	    @Override
 	    public InstanceConnector instances() {
-	    	throw new UnsupportedOperationException("Instance operation is not supported on WAP stacks.");
+	    	return wapInstanceConnector;
 	    }
 
 	    @Override
 	    public MetadataCollector metadata() {
-	    	return wapMetadataConnector;
+	    	return wapMetadataCollector;
 	    }
 
 	    @Override
